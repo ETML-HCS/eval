@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Évaluation des Compétences</title>
+   <style>
+      body {
+         font-family: Arial, sans-serif;
+         margin: 0;
+         padding: 12px;
+         background-color: #f4f4f9;
+         color: #333;
+      }
+
+      h1 {
+         text-align: center;
+         color: #444;
+         margin-bottom: 20px;
+      }
+
+      .form-container {
+         display: flex;
+         justify-content: center;
+         flex-wrap: wrap;
+         background: #fff;
+         padding: 20px;
+         border-radius: 10px;
+         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+         transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+         overflow: hidden;
+      }
+
+      .form-group {
+         margin-bottom: 10px;
+         width: 47%;
+         margin-right: 3%;
+      }
+
+      .form-group label {
+         display: block;
+         margin-bottom: 5px;
+         font-weight: bold;
+         font-size: 14px;
+      }
+
+      .form-group input,
+      .remark-area {
+         width: 100%;
+         padding: 12px;
+         border: 1px solid #ddd;
+         border-radius: 5px;
+         font-size: 14px;
+         background-color: #f9f9f9;
+         transition: background-color 0.2s;
+      }
+
+      .form-group input:focus,
+      .remark-area:focus {
+         background-color: #fff;
+         outline: none;
+         border-color: #4CAF50;
+      }
+
+      .remark-area {
+         resize: none;
+         margin-top: 10px;
+      }
+
+      .form-group.full-width {
+         width: 100%;
+      }
+
+      .category-container {
+         margin-bottom: 20px;
+         background: #fff;
+         padding: 25px;
+         border-radius: 10px;
+         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+         transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+         overflow: hidden;
+      }
+
+      .category-header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         font-weight: bold;
+         margin-bottom: 10px;
+         font-size: 18px;
+      }
+
+      .category-header h2 {
+         margin: 0;
+      }
+
+      .category-header button {
+         padding: 8px 15px;
+         background-color: #007bff;
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+         transition: background-color 0.3s, box-shadow 0.3s;
+      }
+
+      .category-header button:hover {
+         background-color: #0056b3;
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .criteria-grid {
+         display: grid;
+         grid-template-columns: 1fr 1fr;
+         gap: 20px;
+      }
+
+      .slider-container {
+         grid-column: 1;
+         grid-row: 2;
+         display: flex;
+         flex-direction: column;
+         gap: 8px;
+         margin-top: 3px;
+      }
+
+      .slider {
+         width: 100%;
+         height: 8px;
+         border-radius: 5px;
+         background: linear-gradient(to right, #f00, #ffcc00, #4caf50);
+         outline: none;
+         transition: background 0.3s ease-in-out;
+      }
+
+      .slider::-webkit-slider-thumb {
+         width: 20px;
+         height: 20px;
+         border-radius: 50%;
+         background: #007bff;
+         cursor: pointer;
+         transition: background 0.2s ease-in-out;
+      }
+
+      .slider:active::-webkit-slider-thumb {
+         background: #0056b3;
+      }
+
+      .slider:focus {
+         box-shadow: 0 0 5px rgba(0, 123, 255, 0.8);
+      }
+
+      .slider-value {
+         font-size: 14px;
+         font-weight: bold;
+         color: #333;
+         text-align: center;
+         margin-top: 5px;
+      }
+
+      .criterion-card {
+         display: grid;
+         grid-template-columns: 1fr 40px;
+         grid-template-rows: auto auto;
+      }
+
+      .criterion-name {
+         grid-column: 1 / 3;
+         grid-row: 1;
+         font-size: 16px;
+         color: #555;
+         padding-right: 15px;
+      }
+
+      /* .result-box {
+         grid-column: 2;
+         grid-row: 2;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         background-color: #f6f6f0;
+         padding: 5px 10px;
+         border-radius: 5px;
+         font-size: 14px;
+         font-weight: bold;
+         color: #333;
+      } */
+
+      .hidden {
+         display: none;
+      }
+
+      .student-info {
+         display: flex;
+         flex-direction: column;
+         padding: 20px;
+         background: #e9f1f9;
+         border-radius: 10px;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+         margin-bottom: 20px;
+      }
+
+      .student-info h3 {
+         font-size: 1.6rem;
+         margin-bottom: 15px;
+         color: #007bff;
+      }
+
+      /* Style des onglets */
+      .tabs {
+         display: flex;
+         justify-content: center;
+         margin-bottom: 20px;
+      }
+
+      .tab {
+         padding: 10px 20px;
+         margin-right: 10px;
+         background-color: #f0f0f0;
+         border: 1px solid #ccc;
+         border-radius: 5px;
+         cursor: pointer;
+      }
+
+      .tab.active {
+         background-color: #4CAF50;
+         color: white;
+      }
+
+      /* Styles pour masquer les sections d'évaluation */
+      .evaluation-section {
+         display: none;
+      }
+
+      .evaluation-section.active {
+         display: block;
+      }
+
+      /* Styles pour masquer les sections d'évaluation */
+      .evaluation-section {
+         display: none;
+      }
+
+      .evaluation-section.active {
+         display: block;
+      }
+
+      .result-container {
+         display: flex;
+         justify-content: space-between;
+         margin-top: 20px;
+      }
+
+      .result-box {
+         width: 30%;
+         padding: 15px;
+         border: 2px solid #333;
+         border-radius: 10px;
+         background-color: #f4f4f4;
+         text-align: center;
+      }
+
+      .result-box h3 {
+         margin-bottom: 10px;
+      }
+
+      .result-box p {
+         font-size: 1.5em;
+         font-weight: bold;
+         color: #333;
+      }
+   </style>
+
+</head>
+
+<body>
+   <h1>Évaluation des Compétences</h1>
+
+   <!-- Informations de l'élève -->
+   <div class="student-info" id="student-info">
+
+      <div class="category-header">
+         <h3>INFORMATICIEN-NE</h3>
+         <!-- Bouton pour cacher/afficher les infos de l'élève -->
+         <button id="toggle-student-info" onclick="toggleStudentInfo()">Cacher ▲</button>
+      </div>
+
+      <div class="form-container">
+         <div class="form-group">
+            <label for="project-name">Nom du projet :</label>
+            <input type="text" id="project-name" placeholder="Saisir le nom du projet">
+         </div>
+
+         <div class="form-group">
+            <label for="evaluation-date">Date de l'évaluation :</label>
+            <input type="date" id="evaluation-date">
+         </div>
+
+         <div class="form-group">
+            <label for="student-name">Nom et prénom de l'élève :</label>
+            <input type="text" id="student-name" placeholder="Saisir le nom et prénom">
+         </div>
+
+         <div class="form-group">
+            <label for="student-class">Classe :</label>
+            <input type="text" id="student-class" placeholder="Saisir la classe">
+         </div>
+
+         <div class="form-group full-width">
+            <label for="remarks">Remarques :</label>
+            <textarea id="remarks" class="remark-area" rows="4" placeholder="Ajoutez vos remarques ici..."></textarea>
+         </div>
+      </div>
+   </div>
+
+   <!-- Onglets pour changer de type d'évaluation -->
+   <div class="tabs">
+      <div id="tabAuto" class="tab active" onclick="changeTab('auto')">Auto-évaluation</div>
+      <div id="tabFormative" class="tab inactive" onclick="changeTab('formative')">Évaluation formative</div>
+      <div id="tabSummative" class="tab inactive" onclick="changeTab('summative')">Évaluation sommative</div>
+   </div>
+
+   <!-- Sections des catégories -->
+   <div id="categories"></div>
+
+
+   <!-- Conteneur pour afficher les résultats des trois onglets -->
+   <div id="result-container" class="result-container">
+      <div class="result-box" id="auto-result-box">
+         <h3>Auto-évaluation</h3>
+         <p id="auto-average">0</p>
+      </div>
+      <div class="result-box" id="formative-result-box">
+         <h3>Formative</h3>
+         <p id="formative-average">0</p>
+      </div>
+      <div class="result-box" id="summative-result-box">
+         <h3>Sommative</h3>
+         <p id="summative-average">0</p>
+      </div>
+   </div>
+
+
+
+   <!-- JAVASCRIPT  -->
+
+   <script>
+      let isStudentInfoVisible = true;
+
+      const appreciationLabels = ["NA", "PA", "A", "LA"];
+
+      const visibleCategories = {
+         PROFESSIONNELLES: true,
+         METHODOLOGIQUES: true,
+         SOCIALES: true
+      };
+
+      const criteria = [
+         { id: 1, name: 'Rythme de travail', category: 'PROFESSIONNELLES' },
+         { id: 2, name: 'Qualité du travail', category: 'PROFESSIONNELLES' },
+         { id: 3, name: 'Niveau de maîtrise technique', category: 'PROFESSIONNELLES' },
+         { id: 4, name: 'Autonomie', category: 'PROFESSIONNELLES' },
+         { id: 5, name: 'Processus de travail', category: 'METHODOLOGIQUES' },
+         { id: 6, name: 'Expression orale et écrite', category: 'METHODOLOGIQUES' },
+         { id: 7, name: 'Durabilité et innovation', category: 'METHODOLOGIQUES' },
+         { id: 8, name: 'Aptitude au travail en équipe', category: 'SOCIALES' }
+      ];
+
+      let sliderValues = {
+         auto: {},
+         formative: {},
+         summative: {}
+      };
+
+      let currentTab = 'auto'; // Par défaut, l'onglet actif est l'auto-évaluation
+
+      // Restauration des valeurs des sliders au rendu des catégories
+      function renderCategories() {
+         const categoriesDiv = document.getElementById('categories');
+         categoriesDiv.innerHTML = ''; // Réinitialiser l'affichage
+
+         const groupedCriteria = criteria.reduce((acc, crit) => {
+            const category = crit.category.trim().toUpperCase();
+            acc[category] = acc[category] || [];
+            acc[category].push(crit);
+            return acc;
+         }, {});
+
+         Object.keys(groupedCriteria).forEach(category => {
+            const container = document.createElement('div');
+            container.className = 'category-container';
+            container.style.maxHeight = visibleCategories[category] ? '1000px' : '15px';
+
+            const header = document.createElement('div');
+            header.className = 'category-header';
+            header.innerHTML = `
+            <h2>${category}</h2>
+            <button onclick="toggleCategoryVisibility('${category}')">
+                ${visibleCategories[category] ? 'Cacher ▲' : 'Afficher ▼'}
+            </button>
+        `;
+            container.appendChild(header);
+
+            const criteriaDiv = document.createElement('div');
+            criteriaDiv.className = 'criteria-grid';
+            groupedCriteria[category].forEach(crit => {
+               const card = document.createElement('div');
+               card.className = 'criterion-card';
+               card.innerHTML = `
+                <div class="criterion-name">${crit.name}</div>
+                <div class="slider-container">
+                    ${['auto', 'formative', 'summative'].map(level => `
+                        <label>${level.charAt(0).toUpperCase() + level.slice(1)}:</label>
+                        <input type="range" min="0" max="3" class="slider"
+                               data-id="${crit.id}" data-level="${level}"
+                               value="${sliderValues[level][crit.id] || 0}"
+                               oninput="updateSliderValue(this)" 
+                               ${currentTab !== level ? 'disabled' : ''}>
+                    `).join('')}
+                </div>
+                <div id="result-${crit.id}" class="result-box bg-gray">
+                    ${appreciationLabels[sliderValues[currentTab][crit.id] || 0]}
+                </div>
+                <div class="exclude-checkbox">
+                    <label>
+                        <input type="checkbox" id="exclude-${crit.id}" onclick="toggleExclusion(${crit.id})"
+                               ${excludedCriteria[crit.id] ? 'checked' : ''}>
+                        Exclure de l'évaluation
+                    </label>
+                </div>
+            `;
+               criteriaDiv.appendChild(card);
+            });
+
+            container.appendChild(criteriaDiv);
+            categoriesDiv.appendChild(container);
+         });
+
+         // Initialiser les valeurs des sliders après avoir rendu les catégories
+         initializeSliderValues();
+      }
+
+
+      function toggleStudentInfo() {
+         const studentInfo = document.getElementById('student-info');
+         const toggleButton = document.getElementById('toggle-student-info');
+         const secondDiv = studentInfo.querySelector('.form-container');
+
+         isStudentInfoVisible = !isStudentInfoVisible;
+
+         if (isStudentInfoVisible) {
+            toggleButton.innerText = 'Cacher ▲';
+            secondDiv.style.display = '';
+            studentInfo.style.maxHeight = '';
+
+         } else {
+            toggleButton.innerText = 'Afficher ▼';
+            secondDiv.style.display = 'none';
+            studentInfo.style.maxHeight = '40px';
+         }
+      }
+
+      function toggleCategoryVisibility(category) {
+         visibleCategories[category] = !visibleCategories[category];
+         renderCategories();
+      }
+
+      // Recalcul automatique lors de l'interaction avec un slider ou une exclusion
+      function updateSliderValue(slider) {
+         const id = slider.dataset.id;
+         const level = slider.dataset.level;
+         const value = slider.value;
+
+         sliderValues[level][id] = value; // Mémoriser la valeur
+         document.getElementById(`result-${id}`).textContent = appreciationLabels[value]; // Mettre à jour l'appréciation
+
+         calculateFinalResults(); // Recalculer les résultats
+      }
+
+
+      function toggleCategoryVisibility(category) {
+         visibleCategories[category] = !visibleCategories[category];
+         renderCategories();
+      }
+
+      function getDateDefault() {
+         // Obtenir la date actuelle
+         const today = new Date();
+
+         // Formater la date au format YYYY-MM-DD
+         const yyyy = today.getFullYear();
+         let mm = today.getMonth() + 1; // Les mois commencent à 0
+         let dd = today.getDate();
+
+         // Ajouter un zéro devant les mois ou jours inférieurs à 10
+         if (mm < 10) mm = '0' + mm;
+         if (dd < 10) dd = '0' + dd;
+
+         // Construire la date au format nécessaire
+         const todayFormatted = `${yyyy}-${mm}-${dd}`;
+
+         // Affecter la date au champ input
+         document.getElementById('evaluation-date').value = todayFormatted;
+      }
+
+      function changeTab(tab) {
+         currentTab = tab;
+
+         // Retirer la classe 'active' de tous les onglets
+         document.getElementById('tabAuto').classList.remove('active');
+         document.getElementById('tabFormative').classList.remove('active');
+         document.getElementById('tabSummative').classList.remove('active');
+
+         // Ajouter la classe 'active' à l'onglet sélectionné
+         if (tab === 'auto') {
+            document.getElementById('tabAuto').classList.add('active');
+         } else if (tab === 'formative') {
+            document.getElementById('tabFormative').classList.add('active');
+         } else {
+            document.getElementById('tabSummative').classList.add('active');
+         }
+
+         // Mettre à jour les catégories en fonction de l'onglet sélectionné
+         renderCategories();
+      }
+
+      let excludedCriteria = {}; // Un objet pour suivre les critères exclus
+
+      // Gérer les exclusions
+      function toggleExclusion(criterionId) {
+         excludedCriteria[criterionId] = document.getElementById(`exclude-${criterionId}`).checked;
+         calculateFinalResults(); // Recalculer après modification
+      }
+
+      // Calcul des résultats globaux
+      function calculateFinalResults() {
+         let totalScores = { auto: 0, formative: 0, summative: 0 };
+         let count = { auto: 0, formative: 0, summative: 0 };
+
+         criteria.forEach(crit => {
+            if (excludedCriteria[crit.id]) return; // Ne pas inclure si exclu
+
+            ['auto', 'formative', 'summative'].forEach(level => {
+               const value = sliderValues[level][crit.id];
+               if (value !== undefined) {
+                  totalScores[level] += parseInt(value);
+                  count[level]++;
+               }
+            });
+         });
+         // Mettre à jour les résultats affichés
+         ['auto', 'formative', 'summative'].forEach(level => {
+            const average = count[level] > 0 ? (totalScores[level] / count[level]) : 0;
+            document.getElementById(`${level}-average`).textContent = getResultFromValue(average.toFixed(2));
+         });
+      }
+
+      function calculateGlobalResult(naCount, paCount, aCount, laCount, totalCriteria) {
+         // Effectuer le calcul final en fonction des résultats obtenus
+         const total = naCount + paCount + aCount + laCount;
+         const globalResult = (aCount + laCount) / totalCriteria;
+         return globalResult >= 0.5 ? 'A' : 'PA';
+      }
+
+      function getResultFromValue(value) {
+         // Convertir la moyenne en appréciation (selon moi ???)
+         if (value <= 1) return "NA";
+         if (value <= 2) return "PA";
+         if (value <= 2.5) return "A";
+         return "LA";
+      }
+
+      function initializeSliderValues() {
+         // Initialiser les valeurs des sliders pour chaque critère et chaque onglet
+         criteria.forEach(crit => {
+            ['auto', 'formative', 'summative'].forEach(level => {
+               if (!sliderValues[level][crit.id]) {
+                  sliderValues[level][crit.id] = 0; // Valeur par défaut
+               }
+
+               // Mettre à jour l'interface utilisateur
+               const slider = document.querySelector(`input[data-id="${crit.id}"][data-level="${level}"]`);
+               if (slider) {
+                  slider.value = sliderValues[level][crit.id];
+                  const resultDiv = document.getElementById(`result-${crit.id}`);
+                  resultDiv.innerText = appreciationLabels[slider.value];
+               }
+            });
+         });
+
+         // Recalculer les résultats une fois les valeurs initiales définies
+         calculateFinalResults();
+      }
+
+      renderCategories();
+
+      getDateDefault();
+   </script>
+
+
+</body>
+
+</html>
