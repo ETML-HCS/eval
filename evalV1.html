@@ -140,6 +140,7 @@
          border: 1px solid #ccc;
          border-radius: 8px;
          background-color: #fff;
+         display: none;
       }
 
       .result-box h3 {
@@ -257,6 +258,10 @@
          color: #444;
       }
 
+      .slider-container {
+         z-index: 10;
+      }
+
       /* Curseur */
       .slider {
          width: 100%;
@@ -269,12 +274,14 @@
          outline: none;
          transition: background 0.3s ease;
          /* Transition fluide sur le fond */
+
       }
 
       /* Effet au survol de la piste */
       .slider:hover {
          background: #ccc;
          /* Piste un peu plus foncée au survol */
+
       }
 
       /* Curseur désactivé */
@@ -360,6 +367,139 @@
          font-size: 16px;
          margin-bottom: 6px;
          color: #007bff;
+      }
+
+      [id^="auto-"] {
+         background-color: #22f834;
+         border: 1px solid #ccc;
+         padding: 2px;
+         box-sizing: border-box;
+
+      }
+
+
+      [id^="formative-"] {
+         background-color: #f3b33c;
+         border: 1px solid #ccc;
+         padding: 2px;
+         box-sizing: border-box;
+
+      }
+
+
+      [id^="sommative-"] {
+         background-color: #eb4c25;
+         border: 1px solid #ccc;
+         padding: 2px;
+         box-sizing: border-box;
+
+      }
+
+      .labelEval {
+         visibility: hidden;
+      }
+
+      /* Position relative pour les spans d'appréciation */
+      .appreciation-labels {
+         position: relative;
+         top: -120px;
+         display: flex;
+         justify-content: space-between;
+         margin-inline: 15px;
+         height: 50px;
+         /* Hauteur ajustée pour contenir correctement les labels */
+         margin-bottom: -50px;
+         /* Ajoute un espacement en bas si nécessaire */
+      }
+
+      /* Ajouter les traits verticaux */
+      .appreciation-labels::before {
+         content: '';
+         position: absolute;
+         top: 15px;
+         /* Commence le trait à partir du haut du conteneur */
+         bottom: -70px;
+         /* Fin du trait en bas du conteneur */
+         left: 0;
+         width: 100.3%;
+         /* S'assure que le trait s'étend sur toute la largeur */
+         background: linear-gradient(to right,
+               transparent 0%,
+               /* Pas de ligne avant 0% */
+               #ccc 0%,
+               /* Ligne à 0% */
+               #ccc 1px,
+               /* Largeur du trait à 0% */
+               transparent 1px,
+               /* Espace après la ligne à 0% */
+               transparent 33.4%,
+               /* Ligne à 33.6% */
+               #ccc 33.4%,
+               /* Ligne à 33.6% */
+               #ccc calc(33.4% + 1px),
+               /* Largeur du trait à 33.6% */
+               transparent calc(33.4% + 1px),
+               /* Espace après la ligne à 33.6% */
+               transparent 66.6%,
+               /* Ligne à 66.8% */
+               #ccc 66.6%,
+               /* Ligne à 66.8% */
+               #ccc calc(66.6% + 1px),
+               /* Largeur du trait à 66.8% */
+               transparent calc(66.6% + 1px),
+               /* Espace après la ligne à 66.8% */
+               transparent 99.9%,
+               /* Pas de ligne entre 66%99.8 et 100% */
+               #ccc 99.9%,
+               /* Ligne à 100% */
+               #ccc calc(99.9% + 1px)
+               /* Largeur du trait à 100% */
+            );
+         pointer-events: none;
+         /* Empêche l'interaction avec le trait */
+         z-index: 1;
+         /* Met le trait derrière les éléments comme les sliders */
+      }
+
+
+      /* Labels */
+      .appreciation-labels span {
+         position: absolute;
+         /* Place les labels sous les traits */
+         transform: translateX(-50%);
+         white-space: nowrap;
+         font-size: 12px;
+         /* Ajuster la taille des labels */
+      }
+
+      /* Positions des labels */
+      .appreciation-labels span:nth-child(1) {
+         left: 0%;
+      }
+
+      .appreciation-labels span:nth-child(2) {
+         left: 33.4%;
+      }
+
+      .appreciation-labels span:nth-child(3) {
+         left: 66.9%;
+      }
+
+      .appreciation-labels span:nth-child(4) {
+         left: 100.3%;
+      }
+
+
+
+      /* Checkbox pour exclure */
+      .exclude-checkbox {
+         margin-top: 10px;
+      }
+
+      .exclude-checkbox label {
+         display: flex;
+         align-items: center;
+         gap: 5px;
       }
 
       /* --- Classes Utilitaires --- */
@@ -509,8 +649,7 @@
             <h2>${category}</h2>
             <button onclick="toggleCategoryVisibility('${category}')">
                 ${visibleCategories[category] ? 'Cacher ▲' : 'Afficher ▼'}
-            </button>
-        `;
+            </button>`;
             container.appendChild(header);
 
             const criteriaDiv = document.createElement('div');
@@ -519,28 +658,34 @@
                const card = document.createElement('div');
                card.className = 'criterion-card';
                card.innerHTML = `
-                <div class="criterion-name">${crit.name}</div>
-                <div class="slider-container">
-                    ${['auto', 'formative', 'sommative'].map(level => `
-                        <label>${level.charAt(0).toUpperCase() + level.slice(1)}:</label>
-                        <input type="range" min="0" max="3" class="slider" id="${level}-${crit.id}"
-                               data-id="${crit.id}" data-level="${level}"
-                               value="${sliderValues[level][crit.id] || 0}"
-                               oninput="updateSliderValue(this)" 
-                               ${currentTab !== level ? 'disabled' : ''}>
-                    `).join('')}
-                </div>
-                <div id="result-${crit.id}" class="result-box bg-gray">
-                    ${appreciationLabels[sliderValues[currentTab][crit.id] || 0]}
-                </div>
-                <div class="exclude-checkbox">
-                    <label>
-                        <input type="checkbox" id="exclude-${crit.id}" onclick="toggleExclusion(${crit.id})"
-                               ${excludedCriteria[crit.id] ? 'checked' : ''}>
-                        Exclure de l'évaluation
-                    </label>
-                </div>
-            `;
+    <div class="criterion-name">${crit.name}</div>
+    <div class="slider-container">
+        ${['auto', 'formative', 'sommative'].map(level => `
+            <label class='labelEval'>${level.charAt(0).toUpperCase() + level.slice(1)}:</label>
+            <input type="range" min="0" max="3" class="slider" id="${level}-${crit.id}"
+                   data-id="${crit.id}" data-level="${level}"
+                   value="${sliderValues[level]?.[crit.id] || 0}"
+                   oninput="updateSliderValue(this)" 
+                   ${currentTab !== level ? 'disabled' : ''}>
+        `).join('')}
+    </div>
+    <div class="appreciation-labels">
+        ${appreciationLabels.map((label, i) => `
+            <span id="${label}-${currentTab}-${crit.id}">${label}</span>
+        `).join('')}
+    </div>
+    <div id="result-${crit.id}" class="result-box bg-gray">
+        ${appreciationLabels[sliderValues[currentTab]?.[crit.id] || 0]}
+    </div>
+    <div class="exclude-checkbox">
+        <label>
+            <input type="checkbox" id="exclude-${crit.id}" onclick="toggleExclusion(${crit.id})"
+                   ${excludedCriteria[crit.id] ? 'checked' : ''}>
+            Exclure de l'évaluation
+        </label>
+    </div>
+`;
+
                criteriaDiv.appendChild(card);
             });
 
@@ -584,7 +729,7 @@
          const value = slider.value;
 
          sliderValues[level][id] = value; // Mémoriser la valeur
-         document.getElementById(`result-${id}`).textContent = appreciationLabels[value]; // Mettre à jour l'appréciation
+         document.getElementById(`result - ${id}`).textContent = appreciationLabels[value]; // Mettre à jour l'appréciation
 
          calculateFinalResults(); // Recalculer les résultats
       }
@@ -609,7 +754,7 @@
          if (dd < 10) dd = '0' + dd;
 
          // Construire la date au format nécessaire
-         const todayFormatted = `${yyyy}-${mm}-${dd}`;
+         const todayFormatted = `${yyyy} - ${mm} - ${dd}`;
 
          // Affecter la date au champ input
          document.getElementById('evaluation-date').value = todayFormatted;
@@ -644,7 +789,7 @@
 
       // Gérer les exclusions
       function toggleExclusion(criterionId) {
-         excludedCriteria[criterionId] = document.getElementById(`exclude-${criterionId}`).checked;
+         excludedCriteria[criterionId] = document.getElementById(`exclude - ${criterionId}`).checked;
          calculateFinalResults(); // Recalculer après modification
       }
 
@@ -667,7 +812,7 @@
          // Mettre à jour les résultats affichés
          ['auto', 'formative', 'sommative'].forEach(level => {
             const average = count[level] > 0 ? (totalScores[level] / count[level]) : 0;
-            document.getElementById(`${level}-average`).textContent = getResultFromValue(average.toFixed(2));
+            document.getElementById(`${level} - average`).textContent = getResultFromValue(average.toFixed(2));
          });
       }
 
@@ -695,10 +840,10 @@
                }
 
                // Mettre à jour l'interface utilisateur
-               const slider = document.querySelector(`input[data-id="${crit.id}"][data-level="${level}"]`);
+               const slider = document.querySelector(`input[data - id= "${crit.id}"][data - level="${level}"]`);
                if (slider) {
                   slider.value = sliderValues[level][crit.id];
-                  const resultDiv = document.getElementById(`result-${crit.id}`);
+                  const resultDiv = document.getElementById(`result - ${crit.id}`);
                   resultDiv.innerText = appreciationLabels[slider.value];
                }
             });
