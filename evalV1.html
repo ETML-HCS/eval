@@ -6,269 +6,365 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Évaluation des Compétences</title>
    <style>
+      /* --- Styles Généraux --- */
       body {
          font-family: Arial, sans-serif;
          margin: 0;
-         padding: 12px;
-         background-color: #f4f4f9;
+         padding: 15px;
+         background-color: #f8f9fa;
          color: #333;
+      }
+
+      button {
+         background: linear-gradient(135deg, #4a90e2, #357ABD);
+         color: white;
+         border: none;
+         border-radius: 12px;
+         padding: 2px 7px;
+         font-size: 12px;
+         font-weight: 500;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+         position: relative;
+         overflow: hidden;
+         height: 30px;
+         width: 70px;
+      }
+
+      button::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background: rgba(255, 255, 255, 0.15);
+         transform: translateX(-100%);
+         transition: transform 0.4s ease;
+      }
+
+      button:hover::before {
+         transform: translateX(100%);
+
+      }
+
+      button:hover {
+         background: linear-gradient(135deg, #357ABD, #4a90e2);
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+      }
+
+      button:active {
+         transform: scale(0.98);
+
       }
 
       h1 {
          text-align: center;
          color: #444;
-         margin-bottom: 20px;
-      }
-
-      .form-container {
-         display: flex;
-         justify-content: center;
-         flex-wrap: wrap;
-         background: #fff;
-         padding: 20px;
-         border-radius: 10px;
-         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-         transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-         overflow: hidden;
-      }
-
-      .form-group {
-         margin-bottom: 10px;
-         width: 47%;
-         margin-right: 3%;
-      }
-
-      .form-group label {
-         display: block;
          margin-bottom: 5px;
-         font-weight: bold;
-         font-size: 14px;
+         font-size: 26px;
       }
 
-      .form-group input,
-      .remark-area {
-         width: 100%;
-         padding: 12px;
-         border: 1px solid #ddd;
-         border-radius: 5px;
-         font-size: 14px;
-         background-color: #f9f9f9;
-         transition: background-color 0.2s;
-      }
-
-      .form-group input:focus,
-      .remark-area:focus {
-         background-color: #fff;
-         outline: none;
-         border-color: #4CAF50;
-      }
-
-      .remark-area {
-         resize: none;
-         margin-top: 10px;
-      }
-
-      .form-group.full-width {
-         width: 100%;
-      }
-
-      .category-container {
-         margin-bottom: 20px;
-         background: #fff;
-         padding: 25px;
-         border-radius: 10px;
-         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-         transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-         overflow: hidden;
-      }
-
-      .category-header {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         font-weight: bold;
+      h3 {
+         font-size: 1.2rem;
+         color: #333;
          margin-bottom: 10px;
-         font-size: 18px;
       }
 
-      .category-header h2 {
-         margin: 0;
-      }
-
-      .category-header button {
-         padding: 8px 15px;
-         background-color: #007bff;
-         color: white;
-         border: none;
-         border-radius: 5px;
-         cursor: pointer;
-         transition: background-color 0.3s, box-shadow 0.3s;
-      }
-
-      .category-header button:hover {
-         background-color: #0056b3;
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      .criteria-grid {
-         display: grid;
-         grid-template-columns: 1fr 1fr;
-         gap: 20px;
-      }
-
-      .slider-container {
-         grid-column: 1;
-         grid-row: 2;
-         display: flex;
-         flex-direction: column;
-         gap: 8px;
-         margin-top: 3px;
-      }
-
-      .slider {
-         width: 100%;
-         height: 8px;
-         border-radius: 5px;
-         background: linear-gradient(to right, #f00, #ffcc00, #4caf50);
-         outline: none;
-         transition: background 0.3s ease-in-out;
-      }
-
-      .slider::-webkit-slider-thumb {
-         width: 20px;
-         height: 20px;
-         border-radius: 50%;
-         background: #007bff;
-         cursor: pointer;
-         transition: background 0.2s ease-in-out;
-      }
-
-      .slider:active::-webkit-slider-thumb {
-         background: #0056b3;
-      }
-
-      .slider:focus {
-         box-shadow: 0 0 5px rgba(0, 123, 255, 0.8);
-      }
-
-      .slider-value {
-         font-size: 14px;
-         font-weight: bold;
-         color: #333;
-         text-align: center;
-         margin-top: 5px;
-      }
-
-      .criterion-card {
-         display: grid;
-         grid-template-columns: 1fr 40px;
-         grid-template-rows: auto auto;
-      }
-
-      .criterion-name {
-         grid-column: 1 / 3;
-         grid-row: 1;
-         font-size: 16px;
+      p {
+         font-size: 1rem;
+         line-height: 1.1;
          color: #555;
-         padding-right: 15px;
       }
 
-      /* .result-box {
-         grid-column: 2;
-         grid-row: 2;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         background-color: #f6f6f0;
-         padding: 5px 10px;
-         border-radius: 5px;
-         font-size: 14px;
-         font-weight: bold;
-         color: #333;
-      } */
+      /* --- style des 3 onglets --- */
 
-      .hidden {
-         display: none;
-      }
-
-      .student-info {
-         display: flex;
-         flex-direction: column;
-         padding: 20px;
-         background: #e9f1f9;
-         border-radius: 10px;
-         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-         margin-bottom: 20px;
-      }
-
-      .student-info h3 {
-         font-size: 1.6rem;
-         margin-bottom: 15px;
-         color: #007bff;
-      }
-
-      /* Style des onglets */
       .tabs {
          display: flex;
-         justify-content: center;
-         margin-bottom: 20px;
+         flex-direction: row;
+         justify-content: space-between;
+         margin-block: 20px;
+         border-bottom: 2px solid #ccc;
       }
 
       .tab {
          padding: 10px 20px;
-         margin-right: 10px;
-         background-color: #f0f0f0;
-         border: 1px solid #ccc;
-         border-radius: 5px;
+         font-size: 16px;
+         font-weight: 500;
          cursor: pointer;
+         transition: all 0.3s ease;
+         border-radius: 8px 8px 0 0;
+         /* Coins arrondis sur le dessus */
       }
 
+      /* Onglet actif */
       .tab.active {
-         background-color: #4CAF50;
+         background-color: #4a90e2;
+         /* Couleur bleu clair */
          color: white;
+         border-bottom: 3px solid #4a90e2;
+         /* Bordure visible pour l'onglet actif */
+         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+         /* Ombre douce */
       }
 
-      /* Styles pour masquer les sections d'évaluation */
-      .evaluation-section {
-         display: none;
+      /* Onglet inactif */
+      .tab.inactive {
+         background-color: #f4f4f4;
+         /* Couleur de fond grise claire */
+         color: #777;
+         /* Texte gris */
+         border-bottom: 3px solid transparent;
+         /* Pas de bordure sous l'onglet inactif */
       }
 
-      .evaluation-section.active {
-         display: block;
+      .tab:hover {
+         background-color: #e1e1e1;
+         /* Changement de couleur au survol */
+         color: #333;
+         /* Assombrissement du texte lors du survol */
       }
 
-      /* Styles pour masquer les sections d'évaluation */
-      .evaluation-section {
-         display: none;
-      }
 
-      .evaluation-section.active {
-         display: block;
-      }
-
+      /* --- Conteneur Résultats --- */
       .result-container {
          display: flex;
-         justify-content: space-between;
-         margin-top: 20px;
+         flex-direction: column;
+         gap: 10px;
+         margin-top: 30px;
       }
 
       .result-box {
-         width: 30%;
-         padding: 15px;
-         border: 2px solid #333;
-         border-radius: 10px;
-         background-color: #f4f4f4;
-         text-align: center;
+         padding: 12px;
+         border: 1px solid #ccc;
+         border-radius: 8px;
+         background-color: #fff;
       }
 
       .result-box h3 {
          margin-bottom: 10px;
+         font-size: 1.2rem;
+         color: #444;
       }
 
       .result-box p {
-         font-size: 1.5em;
+         font-size: 1rem;
          font-weight: bold;
+         color: #222;
+      }
+
+      .info-evaluation {
+         margin-top: 10px;
+         font-size: 0.9rem;
+         color: #666;
+         text-align: justify;
+      }
+
+      /* --- Formulaires --- */
+      .form-container {
+         display: flex;
+         position: relative;
+         flex-wrap: wrap;
+         justify-content: center;
+         align-items: center;
+         gap: 2%;
+         width: 92%;
+         top: -15px;
+         background: #fff;
+         padding: 8px;
+         border-radius: 8px;
+         border: 1px solid #ccc;
+      }
+
+      .form-group {
+         width: 48%;
+         margin-bottom: 6px;
+      }
+
+      .form-group label {
+         display: block;
+         margin-bottom: 3px;
+         font-weight: bold;
+         font-size: 0.95rem;
+      }
+
+      .form-group input,
+      .remark-area {
+         padding: 6px;
+         font-size: 14px;
+         border: 1px solid #ccc;
+         border-radius: 5px;
+         width: 100%;
+         /* S'assurer que tous les éléments prennent la largeur disponible */
+         box-sizing: border-box;
+         /* Prendre en compte le padding dans la largeur totale */
+
+      }
+
+      .remark-area {
+         resize: none;
+         min-height: 40px;
+      }
+
+      .form-group.full-width {
+         width: 98%;
+      }
+
+      /* --- Catégories --- */
+      .category-container {
+
+         margin: auto 0;
+         margin-bottom: 10px;
+         padding: 15px;
+         border: 1px solid #ccc;
+         border-radius: 8px;
+         background-color: #fff;
+      }
+
+      .category-header {
+         display: flex;
+         position: relative;
+         top: -20px;
+         width: 100%;
+         justify-content: space-between;
+         font-size: 14px;
+         font-weight: bold;
+         margin-bottom: 5px;
          color: #333;
+      }
+
+      .criteria-grid {
+         display: flex;
+         flex-direction: column;
+         gap: 15px;
+         padding-left: 15px;
+      }
+
+      .criterion-card {
+         display: flex;
+         flex-direction: column;
+         gap: 8px;
+         padding: 10px;
+         border-left: 3px solid #007bff;
+         background: #f9f9f9;
+         border-radius: 5px;
+      }
+
+      .criterion-name {
+         font-size: 1rem;
+         font-weight: bold;
+         color: #444;
+      }
+
+      /* Curseur */
+      .slider {
+         width: 100%;
+         height: 8px;
+         border-radius: 5px;
+         background: #ddd;
+         /* Couleur unie pour la piste */
+         -webkit-appearance: none;
+         appearance: none;
+         outline: none;
+         transition: background 0.3s ease;
+         /* Transition fluide sur le fond */
+      }
+
+      /* Effet au survol de la piste */
+      .slider:hover {
+         background: #ccc;
+         /* Piste un peu plus foncée au survol */
+      }
+
+      /* Curseur désactivé */
+      .slider:disabled {
+         background: #e0e0e0;
+         /* Couleur plus claire pour indiquer qu'il est désactivé */
+      }
+
+      /* Bouton du curseur */
+      .slider::-webkit-slider-thumb {
+         -webkit-appearance: none;
+         appearance: none;
+         width: 20px;
+         height: 20px;
+         background-color: #007bff;
+         /* Couleur bleue */
+         border-radius: 50%;
+         cursor: pointer;
+         transition: background-color 0.3s ease;
+         /* Transition sur la couleur du bouton */
+      }
+
+      /* Effet au survol du bouton */
+      .slider::-webkit-slider-thumb:hover {
+         background-color: #0056b3;
+         /* Couleur plus foncée au survol */
+      }
+
+      /* Bouton désactivé */
+      .slider:disabled::-webkit-slider-thumb {
+         background-color: #b0b0b0;
+         /* Couleur plus claire pour le bouton désactivé */
+         cursor: not-allowed;
+         /* Le curseur devient une croix pour indiquer l'inactivité */
+      }
+
+      /* Pour Firefox */
+      .slider::-moz-range-thumb {
+         width: 20px;
+         height: 20px;
+         background-color: #007bff;
+         border-radius: 50%;
+         cursor: pointer;
+         transition: background-color 0.3s ease;
+      }
+
+      .slider::-moz-range-thumb:hover {
+         background-color: #0056b3;
+      }
+
+      /* Bouton désactivé pour Firefox */
+      .slider:disabled::-moz-range-thumb {
+         background-color: #b0b0b0;
+         /* Couleur plus claire pour le bouton désactivé */
+         cursor: not-allowed;
+         /* Le curseur devient une croix pour indiquer l'inactivité */
+      }
+
+      /* Valeur du curseur */
+      .slider-value {
+         font-size: 0.9rem;
+         color: #333;
+         text-align: right;
+      }
+
+
+      /* --- Étudiants --- */
+      .student-info {
+         display: grid;
+         padding: 5px;
+         background: #e9f1f9;
+         border: 1px solid #ccd9e6;
+         border-radius: 8px;
+         margin: 10px;
+         justify-items: center;
+         /* Centre horizontalement les éléments à l'intérieur */
+         align-items: center;
+         /* Centre verticalement les éléments à l'intérieur */
+         height: 100%;
+      }
+
+      .student-info h3 {
+         font-size: 16px;
+         margin-bottom: 6px;
+         color: #007bff;
+      }
+
+      /* --- Classes Utilitaires --- */
+      .hidden {
+         display: none;
       }
    </style>
 
@@ -318,7 +414,7 @@
    <div class="tabs">
       <div id="tabAuto" class="tab active" onclick="changeTab('auto')">Auto-évaluation</div>
       <div id="tabFormative" class="tab inactive" onclick="changeTab('formative')">Évaluation formative</div>
-      <div id="tabSummative" class="tab inactive" onclick="changeTab('summative')">Évaluation sommative</div>
+      <div id="tabsommative" class="tab inactive" onclick="changeTab('sommative')">Évaluation sommative</div>
    </div>
 
    <!-- Sections des catégories -->
@@ -330,14 +426,29 @@
       <div class="result-box" id="auto-result-box">
          <h3>Auto-évaluation</h3>
          <p id="auto-average">0</p>
+         <span class="info-evaluation">
+            L’auto-évaluation permet à l’élève de réfléchir sur ses propres performances et progrès.
+            Elle encourage la prise de conscience et l’autonomie dans le processus d’apprentissage.
+         </span>
       </div>
+
       <div class="result-box" id="formative-result-box">
-         <h3>Formative</h3>
+         <h3>Évaluation Formative</h3>
          <p id="formative-average">0</p>
+         <span class="info-evaluation">
+            L’évaluation formative est un outil continu qui vise à guider l’apprentissage des élèves.
+            Elle permet d’identifier les forces et les domaines à améliorer pour progresser.
+         </span>
       </div>
-      <div class="result-box" id="summative-result-box">
-         <h3>Sommative</h3>
-         <p id="summative-average">0</p>
+
+      <div class="result-box" id="sommative-result-box">
+         <h3>Évaluation Sommative</h3>
+         <p id="sommative-average">0</p>
+         <span class="info-evaluation">
+            L’évaluation sommative se déroule à la fin d’une période d’apprentissage (comme un semestre ou une année
+            scolaire).
+            Elle vise à évaluer les acquis des élèves par rapport à un référentiel ou à des normes.
+         </span>
       </div>
    </div>
 
@@ -370,7 +481,7 @@
       let sliderValues = {
          auto: {},
          formative: {},
-         summative: {}
+         sommative: {}
       };
 
       let currentTab = 'auto'; // Par défaut, l'onglet actif est l'auto-évaluation
@@ -410,9 +521,9 @@
                card.innerHTML = `
                 <div class="criterion-name">${crit.name}</div>
                 <div class="slider-container">
-                    ${['auto', 'formative', 'summative'].map(level => `
+                    ${['auto', 'formative', 'sommative'].map(level => `
                         <label>${level.charAt(0).toUpperCase() + level.slice(1)}:</label>
-                        <input type="range" min="0" max="3" class="slider"
+                        <input type="range" min="0" max="3" class="slider" id="${level}-${crit.id}"
                                data-id="${crit.id}" data-level="${level}"
                                value="${sliderValues[level][crit.id] || 0}"
                                oninput="updateSliderValue(this)" 
@@ -510,7 +621,11 @@
          // Retirer la classe 'active' de tous les onglets
          document.getElementById('tabAuto').classList.remove('active');
          document.getElementById('tabFormative').classList.remove('active');
-         document.getElementById('tabSummative').classList.remove('active');
+         document.getElementById('tabsommative').classList.remove('active');
+
+         document.getElementById('tabAuto').classList.remove('inactive');
+         document.getElementById('tabFormative').classList.remove('inactive');
+         document.getElementById('tabsommative').classList.remove('inactive');
 
          // Ajouter la classe 'active' à l'onglet sélectionné
          if (tab === 'auto') {
@@ -518,7 +633,7 @@
          } else if (tab === 'formative') {
             document.getElementById('tabFormative').classList.add('active');
          } else {
-            document.getElementById('tabSummative').classList.add('active');
+            document.getElementById('tabsommative').classList.add('active');
          }
 
          // Mettre à jour les catégories en fonction de l'onglet sélectionné
@@ -535,13 +650,13 @@
 
       // Calcul des résultats globaux
       function calculateFinalResults() {
-         let totalScores = { auto: 0, formative: 0, summative: 0 };
-         let count = { auto: 0, formative: 0, summative: 0 };
+         let totalScores = { auto: 0, formative: 0, sommative: 0 };
+         let count = { auto: 0, formative: 0, sommative: 0 };
 
          criteria.forEach(crit => {
             if (excludedCriteria[crit.id]) return; // Ne pas inclure si exclu
 
-            ['auto', 'formative', 'summative'].forEach(level => {
+            ['auto', 'formative', 'sommative'].forEach(level => {
                const value = sliderValues[level][crit.id];
                if (value !== undefined) {
                   totalScores[level] += parseInt(value);
@@ -550,7 +665,7 @@
             });
          });
          // Mettre à jour les résultats affichés
-         ['auto', 'formative', 'summative'].forEach(level => {
+         ['auto', 'formative', 'sommative'].forEach(level => {
             const average = count[level] > 0 ? (totalScores[level] / count[level]) : 0;
             document.getElementById(`${level}-average`).textContent = getResultFromValue(average.toFixed(2));
          });
@@ -574,7 +689,7 @@
       function initializeSliderValues() {
          // Initialiser les valeurs des sliders pour chaque critère et chaque onglet
          criteria.forEach(crit => {
-            ['auto', 'formative', 'summative'].forEach(level => {
+            ['auto', 'formative', 'sommative'].forEach(level => {
                if (!sliderValues[level][crit.id]) {
                   sliderValues[level][crit.id] = 0; // Valeur par défaut
                }
