@@ -10,7 +10,7 @@
       body {
          font-family: Arial, sans-serif;
          margin: 0;
-         padding: 15px;
+         padding: 12px;
          background-color: #f8f9fa;
          color: #333;
       }
@@ -62,12 +62,12 @@
       h1 {
          text-align: center;
          color: #444;
-         margin-bottom: 5px;
-         font-size: 26px;
+         margin-bottom: -10px;
+         font-size: 25px;
       }
 
       h3 {
-         font-size: 1.2rem;
+         font-size: 16px;
          color: #333;
          margin-bottom: 10px;
       }
@@ -84,7 +84,7 @@
          display: flex;
          flex-direction: row;
          justify-content: space-between;
-         margin-block: 20px;
+         /* margin-block: 15px; */
          border-bottom: 2px solid #ccc;
       }
 
@@ -126,7 +126,6 @@
          /* Assombrissement du texte lors du survol */
       }
 
-
       /* --- Conteneur Résultats --- */
       .result-container {
          display: flex;
@@ -156,7 +155,7 @@
       }
 
       .info-evaluation {
-         margin-top: 10px;
+         margin-top: 8px;
          font-size: 0.9rem;
          color: #666;
          text-align: justify;
@@ -200,7 +199,6 @@
          /* S'assurer que tous les éléments prennent la largeur disponible */
          box-sizing: border-box;
          /* Prendre en compte le padding dans la largeur totale */
-
       }
 
       .remark-area {
@@ -214,10 +212,11 @@
 
       /* --- Catégories --- */
       .category-container {
+         display: grid;
+         grid-template-rows: 2;
 
-         margin: auto 0;
-         margin-bottom: 10px;
-         padding: 15px;
+         margin-bottom: 5px;
+         padding: 10px;
          border: 1px solid #ccc;
          border-radius: 8px;
          background-color: #fff;
@@ -229,25 +228,24 @@
          top: -20px;
          width: 100%;
          justify-content: space-between;
-         font-size: 14px;
+         font-size: 12px;
          font-weight: bold;
-         margin-bottom: 5px;
          color: #333;
       }
 
       .criteria-grid {
-         display: flex;
-         flex-direction: column;
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(24%, 1fr));
          gap: 15px;
-         padding-left: 15px;
+         margin-top: -20px;
       }
 
       .criterion-card {
          display: flex;
          flex-direction: column;
          gap: 8px;
-         padding: 10px;
-         border-left: 3px solid #007bff;
+         padding: 5px;
+         border-left: 2px solid #007bff;
          background: #f9f9f9;
          border-radius: 5px;
       }
@@ -264,7 +262,7 @@
 
       /* Curseur */
       .slider {
-         width: 100%;
+         width: 99%;
          height: 8px;
          border-radius: 5px;
          background: #ddd;
@@ -279,7 +277,7 @@
 
       /* Effet au survol de la piste */
       .slider:hover {
-         background: #ccc;
+         background: #afb1db;
          /* Piste un peu plus foncée au survol */
 
       }
@@ -347,7 +345,6 @@
          text-align: right;
       }
 
-
       /* --- Étudiants --- */
       .student-info {
          display: grid;
@@ -355,7 +352,7 @@
          background: #e9f1f9;
          border: 1px solid #ccd9e6;
          border-radius: 8px;
-         margin: 10px;
+         margin: 10px 10%;
          justify-items: center;
          /* Centre horizontalement les éléments à l'intérieur */
          align-items: center;
@@ -365,7 +362,7 @@
 
       .student-info h3 {
          font-size: 16px;
-         margin-bottom: 6px;
+         margin-bottom: 5px;
          color: #007bff;
       }
 
@@ -374,7 +371,6 @@
          border: 1px solid #ccc;
          padding: 2px;
          box-sizing: border-box;
-
       }
 
 
@@ -383,7 +379,6 @@
          border: 1px solid #ccc;
          padding: 2px;
          box-sizing: border-box;
-
       }
 
 
@@ -488,8 +483,6 @@
       .appreciation-labels span:nth-child(4) {
          left: 100.3%;
       }
-
-
 
       /* Checkbox pour exclure */
       .exclude-checkbox {
