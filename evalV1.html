@@ -79,11 +79,10 @@
       }
 
       /* --- style des 3 onglets --- */
-
       .tabs {
          display: flex;
          flex-direction: row;
-         justify-content: space-between;
+         justify-content: space-around;
          /* margin-block: 15px; */
          border-bottom: 2px solid #ccc;
       }
@@ -95,18 +94,14 @@
          cursor: pointer;
          transition: all 0.3s ease;
          border-radius: 8px 8px 0 0;
-         /* Coins arrondis sur le dessus */
       }
 
       /* Onglet actif */
       .tab.active {
          background-color: #4a90e2;
-         /* Couleur bleu clair */
          color: white;
          border-bottom: 3px solid #4a90e2;
-         /* Bordure visible pour l'onglet actif */
          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-         /* Ombre douce */
       }
 
       /* Onglet inactif */
@@ -127,38 +122,70 @@
       }
 
       /* --- Conteneur Résultats --- */
-      .result-container {
+      #result-container {
          display: flex;
-         flex-direction: column;
-         gap: 10px;
-         margin-top: 30px;
+         flex-direction: row;
+         justify-content: flex-end;
+         align-items: flex-end;
+         gap: 20px;
+         font-size: 12px;
       }
 
       .result-box {
-         padding: 12px;
-         border: 1px solid #ccc;
+         position: relative;
+         padding: 6px 4px;
+         border: 2px solid #555454;
          border-radius: 8px;
-         background-color: #fff;
-         display: none;
+         min-width: 100px;
+         min-height: 90px;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         align-items: center;
       }
 
       .result-box h3 {
-         margin-bottom: 10px;
-         font-size: 1.2rem;
-         color: #444;
+         text-align: center;
+         margin-bottom: 5px;
+         font-size: 1em;
+         color: white;
       }
 
       .result-box p {
-         font-size: 1rem;
+         text-align: center;
+         font-size: 1.1em;
+         margin-top: 0;
+         margin-bottom: 15px;
          font-weight: bold;
-         color: #222;
+         color: white;
+         border: none;
       }
 
-      .info-evaluation {
-         margin-top: 8px;
-         font-size: 0.9rem;
-         color: #666;
+      .key {
+         font-size: 1.2rem;
+         padding: 10px 6px !important;
+      }
+
+      .result-box .info-evaluation {
+         display: none;
+         position: absolute;
+         background-color: white;
+         border: 1px solid #ccc;
+         padding: 10px;
+         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+         width: 200px;
+         bottom: 120%;
+         left: -50%;
+         font-size: 12px;
          text-align: justify;
+      }
+
+      .result-box:hover .info-evaluation {
+         display: block;
+      }
+
+      .bg-gray {
+         display: none;
       }
 
       /* --- Formulaires --- */
@@ -187,6 +214,7 @@
          margin-bottom: 3px;
          font-weight: bold;
          font-size: 0.95rem;
+         visibility: visible;
       }
 
       .form-group input,
@@ -196,9 +224,7 @@
          border: 1px solid #ccc;
          border-radius: 5px;
          width: 100%;
-         /* S'assurer que tous les éléments prennent la largeur disponible */
          box-sizing: border-box;
-         /* Prendre en compte le padding dans la largeur totale */
       }
 
       .remark-area {
@@ -214,7 +240,6 @@
       .category-container {
          display: grid;
          grid-template-rows: 2;
-
          margin-bottom: 5px;
          padding: 10px;
          border: 1px solid #ccc;
@@ -262,24 +287,20 @@
 
       /* Curseur */
       .slider {
-         width: 99%;
+         width: 100%;
          height: 8px;
          border-radius: 5px;
          background: #ddd;
-         /* Couleur unie pour la piste */
          -webkit-appearance: none;
          appearance: none;
          outline: none;
          transition: background 0.3s ease;
-         /* Transition fluide sur le fond */
-
       }
 
       /* Effet au survol de la piste */
       .slider:hover {
          background: #afb1db;
          /* Piste un peu plus foncée au survol */
-
       }
 
       /* Curseur désactivé */
@@ -381,13 +402,11 @@
          box-sizing: border-box;
       }
 
-
       [id^="sommative-"] {
          background-color: #eb4c25;
          border: 1px solid #ccc;
          padding: 2px;
          box-sizing: border-box;
-
       }
 
       .labelEval {
@@ -455,7 +474,6 @@
          z-index: 1;
          /* Met le trait derrière les éléments comme les sliders */
       }
-
 
       /* Labels */
       .appreciation-labels span {
@@ -556,9 +574,9 @@
 
 
    <!-- Conteneur pour afficher les résultats des trois onglets -->
-   <div id="result-container" class="result-container">
+   <div id="result-container">
       <div class="result-box" id="auto-result-box">
-         <h3>Auto-évaluation</h3>
+         <h3>Self Eval</h3>
          <p id="auto-average">0</p>
          <span class="info-evaluation">
             L’auto-évaluation permet à l’élève de réfléchir sur ses propres performances et progrès.
@@ -567,7 +585,7 @@
       </div>
 
       <div class="result-box" id="formative-result-box">
-         <h3>Évaluation Formative</h3>
+         <h3>Formative</h3>
          <p id="formative-average">0</p>
          <span class="info-evaluation">
             L’évaluation formative est un outil continu qui vise à guider l’apprentissage des élèves.
@@ -575,8 +593,8 @@
          </span>
       </div>
 
-      <div class="result-box" id="sommative-result-box">
-         <h3>Évaluation Sommative</h3>
+      <div class="result-box key" id="sommative-result-box">
+         <h3>Sommative</h3>
          <p id="sommative-average">0</p>
          <span class="info-evaluation">
             L’évaluation sommative se déroule à la fin d’une période d’apprentissage (comme un semestre ou une année
@@ -710,7 +728,6 @@
             console.error(`L'élément avec l'ID "${category}" n'a pas été trouvé.`);
             return;
          }
-
          const container = categoryElement.parentElement;
 
          // Basculer la visibilité
@@ -733,7 +750,7 @@
          const value = slider.value;
 
          sliderValues[level][id] = value; // Mémoriser la valeur
-         document.getElementById(`result - ${id}`).textContent = appreciationLabels[value]; // Mettre à jour l'appréciation
+         document.getElementById(`result-${id}`).textContent = appreciationLabels[value]; // Mettre à jour l'appréciation
 
          calculateFinalResults(); // Recalculer les résultats
       }
@@ -751,12 +768,13 @@
          if (mm < 10) mm = '0' + mm;
          if (dd < 10) dd = '0' + dd;
 
-         // Construire la date au format nécessaire
-         const todayFormatted = `${yyyy} - ${mm} - ${dd}`;
+         // Construire la date au format nécessaire (sans espaces)
+         const todayFormatted = `${yyyy}-${mm}-${dd}`;
 
          // Affecter la date au champ input
          document.getElementById('evaluation-date').value = todayFormatted;
       }
+
 
       function changeTab(tab) {
          currentTab = tab;
@@ -787,47 +805,63 @@
 
       // Gérer les exclusions
       function toggleExclusion(criterionId) {
-         excludedCriteria[criterionId] = document.getElementById(`exclude - ${criterionId}`).checked;
+         excludedCriteria[criterionId] = document.getElementById(`exclude-${criterionId}`).checked;
          calculateFinalResults(); // Recalculer après modification
       }
 
-      // Calcul des résultats globaux
       function calculateFinalResults() {
          let totalScores = { auto: 0, formative: 0, sommative: 0 };
-         let count = { auto: 0, formative: 0, sommative: 0 };
+         let count = 8;
+         let naCount = { auto: 0, formative: 0, sommative: 0 };
+         let paCount = { auto: 0, formative: 0, sommative: 0 };
+         let aCount = { auto: 0, formative: 0, sommative: 0 };
+         let laCount = { auto: 0, formative: 0, sommative: 0 };
 
          criteria.forEach(crit => {
-            if (excludedCriteria[crit.id]) return; // Ne pas inclure si exclu
-
+            if (excludedCriteria[crit.id]) {
+               count--;
+               return; // Ne pas inclure si exclu
+            }
             ['auto', 'formative', 'sommative'].forEach(level => {
                const value = sliderValues[level][crit.id];
+
                if (value !== undefined) {
                   totalScores[level] += parseInt(value);
-                  count[level]++;
+                  if (value < 1) naCount[level]++;
+                  else if (value < 2) paCount[level]++;
+                  else if (value < 3) aCount[level]++;
+                  else laCount[level]++;
                }
             });
          });
-         // Mettre à jour les résultats affichés
+
+
+         console.log(count, naCount['auto'], paCount['auto'], aCount['auto'], laCount['auto']);
+
          ['auto', 'formative', 'sommative'].forEach(level => {
-            const average = count[level] > 0 ? (totalScores[level] / count[level]) : 0;
-            document.getElementById(`${level}-average`).textContent = getResultFromValue(average.toFixed(2));
+
+
+            // Ne fonction pas
+            /*
+               Si au moins un critère est évalué NA -> NA
+               Si au moins un critère est évalué PA et aucun NA -> PA
+               Si plus de 50% des critères sont évalués A et aucun critère n’est évalué NA ou PA -> A
+               Si au moins 50% des critères sont évalués LA et aucun critère n’est évalué NA ou PA -> LA
+            */
+
+            let result;
+
+            if (naCount[level] > 0) { result = "NA"; console.log('NA'); }
+            else if (laCount[level] >= Math.floor(count[level] / 2)) { result = "LA"; console.log('LA'); }
+            else if (aCount[level] > Math.floor(count[level] / 2)) { result = "A"; console.log('A'); }
+            else if (paCount[level] > 0) { result = "PA"; console.log('PA'); }
+            else { result = "PA"; console.log('Default - PA'); }
+
+            document.getElementById(`${level}-average`).textContent = result;
          });
       }
 
-      function calculateGlobalResult(naCount, paCount, aCount, laCount, totalCriteria) {
-         // Effectuer le calcul final en fonction des résultats obtenus
-         const total = naCount + paCount + aCount + laCount;
-         const globalResult = (aCount + laCount) / totalCriteria;
-         return globalResult >= 0.5 ? 'A' : 'PA';
-      }
 
-      function getResultFromValue(value) {
-         // Convertir la moyenne en appréciation (selon moi ???)
-         if (value <= 1) return "NA";
-         if (value <= 2) return "PA";
-         if (value <= 2.5) return "A";
-         return "LA";
-      }
 
       function initializeSliderValues() {
          // Initialiser les valeurs des sliders pour chaque critère et chaque onglet
@@ -846,7 +880,6 @@
                }
             });
          });
-
          // Recalculer les résultats une fois les valeurs initiales définies
          calculateFinalResults();
       }
