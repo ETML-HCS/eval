@@ -486,7 +486,8 @@
 
       /* Checkbox pour exclure */
       .exclude-checkbox {
-         margin-top: 10px;
+         margin-top: 2px;
+         margin-left: 5px;
       }
 
       .exclude-checkbox label {
@@ -585,10 +586,7 @@
       </div>
    </div>
 
-
-
    <!-- JAVASCRIPT  -->
-
    <script>
       let isStudentInfoVisible = true;
 
@@ -634,7 +632,6 @@
          Object.keys(groupedCriteria).forEach(category => {
             const container = document.createElement('div');
             container.className = 'category-container';
-            container.style.maxHeight = visibleCategories[category] ? '1000px' : '15px';
 
             const header = document.createElement('div');
             header.className = 'category-header';
@@ -647,38 +644,36 @@
 
             const criteriaDiv = document.createElement('div');
             criteriaDiv.className = 'criteria-grid';
+            criteriaDiv.id = category;
             groupedCriteria[category].forEach(crit => {
                const card = document.createElement('div');
                card.className = 'criterion-card';
-               card.innerHTML = `
-    <div class="criterion-name">${crit.name}</div>
-    <div class="slider-container">
-        ${['auto', 'formative', 'sommative'].map(level => `
-            <label class='labelEval'>${level.charAt(0).toUpperCase() + level.slice(1)}:</label>
-            <input type="range" min="0" max="3" class="slider" id="${level}-${crit.id}"
-                   data-id="${crit.id}" data-level="${level}"
-                   value="${sliderValues[level]?.[crit.id] || 0}"
-                   oninput="updateSliderValue(this)" 
-                   ${currentTab !== level ? 'disabled' : ''}>
-        `).join('')}
-    </div>
-    <div class="appreciation-labels">
-        ${appreciationLabels.map((label, i) => `
-            <span id="${label}-${currentTab}-${crit.id}">${label}</span>
-        `).join('')}
-    </div>
-    <div id="result-${crit.id}" class="result-box bg-gray">
-        ${appreciationLabels[sliderValues[currentTab]?.[crit.id] || 0]}
-    </div>
-    <div class="exclude-checkbox">
-        <label>
-            <input type="checkbox" id="exclude-${crit.id}" onclick="toggleExclusion(${crit.id})"
-                   ${excludedCriteria[crit.id] ? 'checked' : ''}>
-            Exclure de l'évaluation
-        </label>
-    </div>
-`;
-
+               card.innerHTML = `<div class="criterion-name">${crit.name}</div>
+               <div class="slider-container">
+                  ${['auto', 'formative', 'sommative'].map(level => `
+                     <label class='labelEval'>${level.charAt(0).toUpperCase() + level.slice(1)}:</label>
+                     <input type="range" min="0" max="3" class="slider" id="${level}-${crit.id}"
+                     data-id="${crit.id}" data-level="${level}"
+                     value="${sliderValues[level]?.[crit.id] || 0}"
+                     oninput="updateSliderValue(this)" 
+                     ${currentTab !== level ? 'disabled' : ''}>
+                  `).join('')}
+               </div>
+               <div class="appreciation-labels">
+                  ${appreciationLabels.map((label, i) => `
+                  <span id="${label}-${currentTab}-${crit.id}">${label}</span>
+                  `).join('')}
+                  </div>
+                  <div id="result-${crit.id}" class="result-box bg-gray">
+                     ${appreciationLabels[sliderValues[currentTab]?.[crit.id] || 0]}
+                     </div>
+                     <div class="exclude-checkbox">
+                        <label>
+                           <input type="checkbox" id="exclude-${crit.id}" onclick="toggleExclusion(${crit.id})"
+                           ${excludedCriteria[crit.id] ? 'checked' : ''}>
+                           Exclure de l'évaluation
+                        </label>
+                     </div>`;
                criteriaDiv.appendChild(card);
             });
 
@@ -689,7 +684,6 @@
          // Initialiser les valeurs des sliders après avoir rendu les catégories
          initializeSliderValues();
       }
-
 
       function toggleStudentInfo() {
          const studentInfo = document.getElementById('student-info');
@@ -711,9 +705,26 @@
       }
 
       function toggleCategoryVisibility(category) {
+         const categoryElement = document.getElementById(category);
+         if (!categoryElement) {
+            console.error(`L'élément avec l'ID "${category}" n'a pas été trouvé.`);
+            return;
+         }
+
+         const container = categoryElement.parentElement;
+
+         // Basculer la visibilité
          visibleCategories[category] = !visibleCategories[category];
-         renderCategories();
+
+         if (visibleCategories[category]) {
+            container.style.maxHeight = '1000px';
+            categoryElement.style.visibility = 'visible';
+         } else {
+            container.style.maxHeight = '15px';
+            categoryElement.style.visibility = 'hidden';
+         }
       }
+
 
       // Recalcul automatique lors de l'interaction avec un slider ou une exclusion
       function updateSliderValue(slider) {
@@ -725,12 +736,6 @@
          document.getElementById(`result - ${id}`).textContent = appreciationLabels[value]; // Mettre à jour l'appréciation
 
          calculateFinalResults(); // Recalculer les résultats
-      }
-
-
-      function toggleCategoryVisibility(category) {
-         visibleCategories[category] = !visibleCategories[category];
-         renderCategories();
       }
 
       function getDateDefault() {
@@ -805,7 +810,7 @@
          // Mettre à jour les résultats affichés
          ['auto', 'formative', 'sommative'].forEach(level => {
             const average = count[level] > 0 ? (totalScores[level] / count[level]) : 0;
-            document.getElementById(`${level} - average`).textContent = getResultFromValue(average.toFixed(2));
+            document.getElementById(`${level}-average`).textContent = getResultFromValue(average.toFixed(2));
          });
       }
 
@@ -833,10 +838,10 @@
                }
 
                // Mettre à jour l'interface utilisateur
-               const slider = document.querySelector(`input[data - id= "${crit.id}"][data - level="${level}"]`);
+               const slider = document.querySelector(`input[data-id= "${crit.id}"][data-level="${level}"]`);
                if (slider) {
                   slider.value = sliderValues[level][crit.id];
-                  const resultDiv = document.getElementById(`result - ${crit.id}`);
+                  const resultDiv = document.getElementById(`result-${crit.id}`);
                   resultDiv.innerText = appreciationLabels[slider.value];
                }
             });
