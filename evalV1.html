@@ -46,7 +46,6 @@
 
       button:hover::before {
          transform: translateX(100%);
-
       }
 
       button:hover {
@@ -56,13 +55,11 @@
 
       button:active {
          transform: scale(0.98);
-
       }
 
       h1 {
          text-align: center;
          color: #444;
-         margin-bottom: -10px;
          font-size: 25px;
       }
 
@@ -116,9 +113,7 @@
 
       .tab:hover {
          background-color: #e1e1e1;
-         /* Changement de couleur au survol */
          color: #333;
-         /* Assombrissement du texte lors du survol */
       }
 
       /* --- Conteneur Résultats --- */
@@ -316,11 +311,9 @@
          width: 20px;
          height: 20px;
          background-color: #007bff;
-         /* Couleur bleue */
          border-radius: 50%;
          cursor: pointer;
          transition: background-color 0.3s ease;
-         /* Transition sur la couleur du bouton */
       }
 
       /* Effet au survol du bouton */
@@ -334,7 +327,6 @@
          background-color: #b0b0b0;
          /* Couleur plus claire pour le bouton désactivé */
          cursor: not-allowed;
-         /* Le curseur devient une croix pour indiquer l'inactivité */
       }
 
       /* Pour Firefox */
@@ -356,7 +348,6 @@
          background-color: #b0b0b0;
          /* Couleur plus claire pour le bouton désactivé */
          cursor: not-allowed;
-         /* Le curseur devient une croix pour indiquer l'inactivité */
       }
 
       /* Valeur du curseur */
@@ -373,9 +364,9 @@
          background: #e9f1f9;
          border: 1px solid #ccd9e6;
          border-radius: 8px;
-         margin: 10px 10%;
+         margin-right: 40%;
+         margin-top: 10px;
          justify-items: center;
-         /* Centre horizontalement les éléments à l'intérieur */
          align-items: center;
          /* Centre verticalement les éléments à l'intérieur */
          height: 100%;
@@ -518,6 +509,50 @@
       .hidden {
          display: none;
       }
+
+      /* --- Système de persistance des données --- */
+
+      /* Conteneur principal */
+      #backupSystem {
+         position: relative;
+         top: -110px;
+         display: flex;
+         justify-content: space-around;
+         align-items: center;
+         width: 300px;
+         padding: 10px;
+         border: 2px solid #007bff;
+         border-radius: 8px;
+         background-color: #f8f9fa;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Boutons de chargement et de sauvegarde */
+      #backupSystem .laod button,
+      #backupSystem .save button {
+         width: 120px;
+         height: 40px;
+         background: linear-gradient(135deg, #4a90e2, #357ABD);
+         color: white;
+         border: none;
+         border-radius: 8px;
+         font-size: 14px;
+         font-weight: bold;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      #backupSystem .laod button:hover,
+      #backupSystem .save button:hover {
+         background: linear-gradient(135deg, #357ABD, #4a90e2);
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      #backupSystem .laod button:active,
+      #backupSystem .save button:active {
+         transform: scale(0.95);
+      }
    </style>
 
 </head>
@@ -572,7 +607,6 @@
    <!-- Sections des catégories -->
    <div id="categories"></div>
 
-
    <!-- Conteneur pour afficher les résultats des trois onglets -->
    <div id="result-container">
       <div class="result-box" id="auto-result-box">
@@ -597,10 +631,23 @@
          <h3>Sommative</h3>
          <p id="sommative-average">0</p>
          <span class="info-evaluation">
-            L’évaluation sommative se déroule à la fin d’une période d’apprentissage (comme un semestre ou une année
-            scolaire).
+            L’évaluation sommative se déroule à la fin d’une période d’apprentissage
+            (comme un semestre ou une année scolaire).
             Elle vise à évaluer les acquis des élèves par rapport à un référentiel ou à des normes.
          </span>
+      </div>
+   </div>
+
+   <!-- Système de persistance des données -->
+   <div id="backupSystem">
+      <div class="validation">
+         <button onclick="onValidation()">Valider</button>
+      </div>
+      <div class="laod">
+         <button onclick="onLoad()">Charger</button>
+      </div>
+      <div class="save">
+         <button onclick="onSave()">Sauvegarder</button>
       </div>
    </div>
 
@@ -634,6 +681,107 @@
       };
 
       let currentTab = 'auto'; // Par défaut, l'onglet actif est l'auto-évaluation
+
+      // Objet de standard de sauvegarde des données d'évaluation des étudiants
+      let jsonSave = {
+         projetName: "",         // Nom du projet d'évaluation
+         studentLastName: "",    // Nom de famille de l'étudiant
+         studentFirstName: "",   // Prénom de l'étudiant
+         studentClass: "",       // Classe de l'étudiant
+         studentRemark: "",      // Remarques générales sur l'étudiant
+         appreciations: [{       // Tableau contenant les appréciations par niveau [  level: "",  ]  // Niveau d'appréciation (auto, formative, sommative)
+            date: "",            // Date de l'appréciation
+            criteria: [{         // Tableau des critères pour ce niveau d'appréciation [   id: "", ] // Identifiant unique du critère
+               name: "",         // Nom du critère (rythme, maitrise, qualité de...)
+               value: ""         // Valeur de l'appréciation pour ce critère (na, pa, a, la)
+            }]
+         }]
+      };
+
+      function onValidation() {
+
+
+         // Explications  :
+
+         // L'évaluation se fait au minimum 3 fois
+         // Cela signifie que chaque étudiant sera évalué au moins trois fois pendant la période d'évaluation.
+
+         // Le fichier doit donc être chargé 2 fois
+         // La première fois pour initialiser les données de l'élève.
+         // La deuxième fois pour ajouter les appréciations sans perdre les informations initiales de l'élève.
+
+         // La première fois le jsonSave est vide (sauvegarde des informations de l'élève)
+         // Lors de la première sauvegarde, jsonSave ne contiendra que les informations de base de l'élève, 
+         // comme le nom, le prénom, la classe, etc.
+
+         // La première fois c'est l'autoEvaluation
+         // La première évaluation à entrer est l'autoévaluation de l'élève.
+
+         // Écraser les données élève pas de souci (dans le cas où un changement est nécessaire c'est OK)
+         // Si les informations de base de l'élève doivent être modifiées après la première sauvegarde, 
+         // elles peuvent être écrasées sans problème.
+
+         // Selon l'onglet, il faut sauvegarder les 8 critères avec leurs différents niveaux de NA à LA
+         // Chaque onglet d'évaluation (autoévaluation, formative, sommative) doit inclure les 8 critères 
+         // avec des niveaux allant de NA (Non Acquis) à LA (Largement Acquis).
+
+         // La date de l'appréciation est celle qui est au moment de la validation
+         // La date associée à chaque appréciation doit être la date à laquelle l'évaluation est validée.
+
+         // L'onglet fait foi
+         // L'onglet sélectionné lors de la saisie des données détermine le niveau de l'évaluation 
+         // (autoévaluation, formative, sommative).
+
+
+         // exemple rapide ci-dessous
+         // Mettre à jour l'objet jsonSave avec les données saisies 
+         jsonSave.projetName = document.getElementById('projetName').value;
+         jsonSave.studentLastName = document.getElementById('studentLastName').value;
+         jsonSave.studentFirstName = document.getElementById('studentFirstName').value;
+         jsonSave.studentClass = document.getElementById('studentClass').value;
+         jsonSave.studentRemark = document.getElementById('studentRemark').value;
+
+
+
+         jsonSave.appreciations[0].date = document.getElementById('auto-1').value;
+
+         jsonSave.appreciations[0].criteria[0].name = document.getElementById('criteriaName').value;
+         jsonSave.appreciations[0].criteria[0].value = document.getElementById('criteriaValue').value;
+         console.log("Données mises à jour :", jsonSave);
+         alert("Données validées avec succès!");
+      }
+
+
+      function onLoad() {
+         // Récupère le fichier sélectionné 
+         const fileInput = document.getElementById('fileInput');
+         const file = fileInput.files[0];
+         const reader = new FileReader();
+         reader.onload = function (event) {
+            jsonSave = JSON.parse(event.target.result);
+            console.log("Données chargées :", jsonSave);
+            alert("Données chargées avec succès!");
+         };
+         if (file) {
+            reader.readAsText(file);
+         }
+         else {
+            alert("Veuillez sélectionner un fichier JSON à charger.");
+         }
+      }
+
+      function onSave() {
+         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonSave));
+         const downloadAnchorNode = document.createElement('a');
+         downloadAnchorNode.setAttribute("href", dataStr);
+         downloadAnchorNode.setAttribute("download", "data.json");
+         document.body.appendChild(downloadAnchorNode);
+         // required for Firefox 
+         downloadAnchorNode.click();
+         downloadAnchorNode.remove();
+         alert("Données sauvegardées avec succès!");
+      }
+
 
       // Restauration des valeurs des sliders au rendu des catégories
       function renderCategories() {
@@ -742,14 +890,13 @@
          }
       }
 
-
       // Recalcul automatique lors de l'interaction avec un slider ou une exclusion
       function updateSliderValue(slider) {
          const id = slider.dataset.id;
          const level = slider.dataset.level;
          const value = slider.value;
 
-         sliderValues[level][id] = value; // Mémoriser la valeur
+         sliderValues[level][id] = value;
          document.getElementById(`result-${id}`).textContent = appreciationLabels[value]; // Mettre à jour l'appréciation
 
          calculateFinalResults(); // Recalculer les résultats
@@ -770,11 +917,8 @@
 
          // Construire la date au format nécessaire (sans espaces)
          const todayFormatted = `${yyyy}-${mm}-${dd}`;
-
-         // Affecter la date au champ input
          document.getElementById('evaluation-date').value = todayFormatted;
       }
-
 
       function changeTab(tab) {
          currentTab = tab;
@@ -788,7 +932,6 @@
          document.getElementById('tabFormative').classList.remove('inactive');
          document.getElementById('tabsommative').classList.remove('inactive');
 
-         // Ajouter la classe 'active' à l'onglet sélectionné
          if (tab === 'auto') {
             document.getElementById('tabAuto').classList.add('active');
          } else if (tab === 'formative') {
@@ -797,7 +940,6 @@
             document.getElementById('tabsommative').classList.add('active');
          }
 
-         // Mettre à jour les catégories en fonction de l'onglet sélectionné
          renderCategories();
       }
 
@@ -836,32 +978,29 @@
          });
 
 
-         console.log(count, naCount['auto'], paCount['auto'], aCount['auto'], laCount['auto']);
-
          ['auto', 'formative', 'sommative'].forEach(level => {
-
-
-            // Ne fonction pas
             /*
                Si au moins un critère est évalué NA -> NA
                Si au moins un critère est évalué PA et aucun NA -> PA
-               Si plus de 50% des critères sont évalués A et aucun critère n’est évalué NA ou PA -> A
-               Si au moins 50% des critères sont évalués LA et aucun critère n’est évalué NA ou PA -> LA
+               Si 0 NA et 0 PA  ->  ALOR si < 50% c'est LA sinon A 
             */
 
             let result;
-
-            if (naCount[level] > 0) { result = "NA"; console.log('NA'); }
-            else if (laCount[level] >= Math.floor(count[level] / 2)) { result = "LA"; console.log('LA'); }
-            else if (aCount[level] > Math.floor(count[level] / 2)) { result = "A"; console.log('A'); }
-            else if (paCount[level] > 0) { result = "PA"; console.log('PA'); }
-            else { result = "PA"; console.log('Default - PA'); }
-
+            if (naCount[level] > 0) { result = "NA"; }
+            else if (paCount[level] > 0) {
+               result = "PA"
+            }
+            else {
+               if (aCount[level] > Math.floor(count / 2, 0)) {
+                  result = "A"
+               }
+               else {
+                  result = "LA";
+               }
+            }
             document.getElementById(`${level}-average`).textContent = result;
          });
       }
-
-
 
       function initializeSliderValues() {
          // Initialiser les valeurs des sliders pour chaque critère et chaque onglet
@@ -885,11 +1024,10 @@
       }
 
       renderCategories();
-
       getDateDefault();
+
+
    </script>
-
-
 </body>
 
 </html>
