@@ -135,14 +135,19 @@
 
       /* --- Conteneur Résultats --- */
       #result-container {
-         grid-column: 2;
          display: flex;
-         flex-direction: row;
-         justify-content: flex-end;
-         align-items: flex-end;
+         flex-wrap: wrap-reverse;
+         justify-content: end;
+         align-items: end;
          gap: 10px;
          font-size: 12px;
          margin-bottom: 15px;
+      }
+
+      @media (max-width: 890px) {
+         #result-container {
+            width: min-content;
+         }
       }
 
       .result-box {
@@ -403,7 +408,7 @@
          border-radius: 8px;
          margin: auto 10%;
          margin-bottom: 20px;
-         justify-items: center;
+         justify-items: stretch;
 
          /* Centre verticalement les éléments à l'intérieur */
          height: 100%;
@@ -530,11 +535,6 @@
          gap: 5px;
       }
 
-      /* --- Classes Utilitaires --- */
-      .hidden {
-         display: none;
-      }
-
       /* --- Système de persistance des données --- */
       /* Conteneur principal */
       #backupSystem {
@@ -584,6 +584,58 @@
          outline: none;
          box-shadow: 0 0 0 3px rgba(72, 144, 226, 0.6);
       }
+
+      .modal {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background: rgba(0, 0, 0, 0.7);
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         z-index: 100;
+      }
+
+      .modal-content {
+         background: #fff;
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+         width: 300px;
+         text-align: center;
+      }
+
+      .modal-inputs {
+         display: flex;
+         height: 50px;
+         justify-content: space-between;
+         gap: 4px;
+         align-items: center;
+         vertical-align: middle;
+         box-sizing: content-box;
+      }
+
+      .modal-group {
+         text-align: left;
+      }
+
+      .modal-group>input {
+         padding: 5px;
+         margin: 0 auto;
+
+      }
+
+      .modal-actions {
+         margin-top: 20px;
+         display: flex;
+         justify-content: space-between;
+      }
+
+      .hidden {
+         display: none;
+      }
    </style>
 
 </head>
@@ -591,17 +643,51 @@
 <body>
    <h1>Évaluation des compétences</h1>
 
-   <!-- Système de persistance des données -->
-   <div id="backupSystem">
+   <!-- Persistance des données -->
+   <div id="backupSystem" class="backup-container">
+      <!-- Envoyer -->
+      <button id="sendButton" class="btn-primary" onclick="openSendModal()">Envoyer</button>
+      <span id="sendFeedback" class="feedback hidden"></span>
 
-      <div class="laod"> <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="onLoad()" />
-         <button onclick="document.getElementById('fileInput').click()">Importer</button>
+      <!-- Importer -->
+      <div class="action-container">
+         <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="onLoad()" />
+         <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">Importer</button>
       </div>
-      <div class="save">
-         <button onclick="onSave()">Exporter</button>
+
+      <!-- Exporter -->
+      <div class="action-container">
+         <button class="btn-secondary" onclick="onSave()">Exporter</button>
       </div>
-      <div class="validation">
-         <button onclick="onValidation()">Valider</button>
+
+      <!-- Valider -->
+      <div class="action-container">
+         <button class="btn-secondary" onclick="onValidation()">Valider</button>
+      </div>
+   </div>
+
+   <!-- Modal pour les données supplémentaires -->
+   <div id="sendModal" class="modal hidden">
+      <div class="modal-content">
+         <h3>Informations supplémentaires</h3>
+
+         <form id="sendForm" onsubmit="processSend(event)" method="get">
+            <div class="modal-inputs">
+               <div class="modal-group">
+                  <label for="pseudo">Pseudo :</label>
+                  <input type="text" id="pseudo" name="pseudo" required />
+               </div>
+               <div class="modal-group">
+                  <label for="code">Code :</label>
+                  <input type="password" id="code" name="code" required />
+               </div>
+            </div>
+            <div class="modal-actions">
+               <button type="submit" class="btn-primary">Confirmer</button>
+               <button type="button" class="btn-secondary" onclick="closeSendModal()">Annuler</button>
+            </div>
+         </form>
+
       </div>
    </div>
 
@@ -682,13 +768,13 @@
    <!-- Onglets pour changer de type d'évaluation -->
    <div class="tabs">
       <div id="tabAuto" class="tab active" onclick="changeTab('auto')">
-         Auto-évaluation <span id="dateAuto"></span>
+         Auto-évaluation
       </div>
       <div id="tabFormative" class="tab inactive" onclick="changeTab('formative')">
-         Évaluation formative <span id="dateFormative"></span>
+         Évaluation formative
       </div>
       <div id="tabSommative" class="tab inactive" onclick="changeTab('sommative')">
-         Évaluation sommative <span id="dateSommative"></span>
+         Évaluation sommative
       </div>
    </div>
 
@@ -699,6 +785,7 @@
 
    <!-- JAVASCRIPT  -->
    <script>
+      let api_srv = 'localhost:3000';
       let excludedCriteria = []; // Un tableau pour suivre les critères exclus 
       let isStudentInfoVisible = true;
 
@@ -803,10 +890,12 @@
          jsonSave.appreciations[level].date = evalDate;  // Assure que la date est sauvegardée dans le JSON
 
          // Construction du sélecteur pour la date
-         const selectorTab = `#date${capitalizeFirstLetter(getType(level))}`;
+         const selectorTab = `#tab${capitalizeFirstLetter(getType(level))}`;
+         const tabs = document.querySelector(selectorTab);
+         let span = document.createElement('span');
+         span.textContent = evalDate;  // Définit le texte du span comme la date
+         tabs.appendChild(span);
 
-         // Mise à jour du DOM avec la nouvelle date
-         document.querySelector(selectorTab).textContent = evalDate;
 
          // Construction du sélecteur pour l'élément de résultat
          const selectorResult = `#${getType(level)}-result-box`; // Ajout du `#` pour le sélecteur ID
@@ -815,7 +904,7 @@
          const resultBox = document.querySelector(selectorResult);
          if (resultBox) {
             // Créer un nouvel élément span pour afficher la date
-            const span = document.createElement('span');
+            span = document.createElement('span');
             span.textContent = evalDate;  // Définit le texte du span comme la date
             resultBox.appendChild(span);  // Ajoute le span à la boîte de résultat
          }
@@ -861,7 +950,7 @@
                document.querySelector("#student-lastName").value = jsonSave.studentLastName || "";
                document.querySelector("#student-firstName").value = jsonSave.studentFirstName || "";
                document.querySelector("#remarks").value = jsonSave.studentRemark || "";
-               document.querySelector("#evaluation-date").value = jsonSave.appreciations?.date || "";
+               document.querySelector("#evaluation-date").value = jsonSave.appreciations[2].date || "";
                document.querySelector("#student-class").value = jsonSave.studentClass || "";
 
                // Mise à jour des critères pour chaque niveau
@@ -870,12 +959,37 @@
                   if (levels.hasOwnProperty(level)) {
                      const criteria = levels[level].criteria;
                      criteria.forEach(item => {
-                        const criteriaElement = document.querySelector(`[data - id= "${getType(level)}-${item.id}"]`);
+                        const criteriaElement = document.querySelector(`[data-id= "${getType(level)}-${item.id}"]`);
 
                         if (criteriaElement) {
                            criteriaElement.value = item.value;
+                           if (criteriaElement.checked) {
+                              criteriaElement.checked = document.querySelector(`#exclude-${IdCriteria}`).checked
+                           }
                         }
                      });
+                  }
+               }
+
+               for (let level = 0; level < 3; level++) {
+                  // Construction du sélecteur pour la date
+                  const selectorTab = `#tab${capitalizeFirstLetter(getType(level))}`;
+                  const tabs = document.querySelector(selectorTab);
+                  let span = document.createElement('span');
+                  span.textContent = jsonSave.appreciations[level].date;  // Définit le texte du span comme la date
+                  tabs.appendChild(span);
+
+
+                  // Construction du sélecteur pour l'élément de résultat
+                  const selectorResult = `#${getType(level)}-result-box`; // Ajout du `#` pour le sélecteur ID
+
+                  // Sélection et ajout du contenu à l'élément de résultat
+                  const resultBox = document.querySelector(selectorResult);
+                  if (resultBox) {
+                     // Créer un nouvel élément span pour afficher la date
+                     span = document.createElement('span');
+                     span.textContent = jsonSave.appreciations[level].date;;  // Définit le texte du span comme la date
+                     resultBox.appendChild(span);  // Ajoute le span à la boîte de résultat
                   }
                }
 
@@ -893,7 +1007,6 @@
          }
       }
 
-
       function onSave() {
          // titre du fichier 
          // projectName, firstName, lastName, année, classe 
@@ -903,19 +1016,17 @@
             + jsonSave.studentLastName.replace(/ /g, '_') + "_"
             + jsonSave.studentFirstName.replace(/ /g, '_') + ".json";
 
-         console.log(nameFile);
-
          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonSave));
          const downloadAnchorNode = document.createElement('a');
          downloadAnchorNode.setAttribute("href", dataStr);
          downloadAnchorNode.setAttribute("download", nameFile);
          document.body.appendChild(downloadAnchorNode);
+
          // required for Firefox 
          downloadAnchorNode.click();
          downloadAnchorNode.remove();
          alert("Données sauvegardées avec succès!");
       }
-
 
       // Restauration des valeurs des sliders au rendu des catégories
       function renderCategories() {
@@ -1021,6 +1132,82 @@
          }
       }
 
+      // Fonctions du modal 
+      function openSendModal() {
+         document.getElementById('sendModal').classList.remove('hidden');
+      }
+
+      function closeSendModal() {
+         document.getElementById('sendModal').classList.add('hidden');
+      }
+
+      async function processSend(event) {
+         event.preventDefault();
+         const pseudo = document.getElementById('pseudo').value;
+         const code = document.getElementById('code').value;
+
+         // Hachage du code
+         const hashedCode = await hashCode(code);
+
+         // Préparer les données
+         const data = {
+            pseudo,
+            hashedCode
+         };
+
+         // Envoyer les données au serveur
+         onValidation();
+         sendDataToServer(data);
+         closeSendModal();
+      }
+
+      async function hashCode(code) {
+         const encoder = new TextEncoder();
+         const data = encoder.encode(code);
+         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+         return Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+      }
+
+      function sendDataToServer(data) {
+         console.log("Envoi des données :", data);
+         console.log("json :", jsonSave);
+
+         // Créer un objet formData avec les données à envoyer
+         const formData = new FormData();
+         formData.append('pseudo', data.pseudo);
+         formData.append('code', data.code);
+         formData.append('fileName', generateFileName(data.fileData)); // Crée le nom de fichier
+         formData.append('jsonData', JSON.stringify(data.fileData));   // Ajoute les données JSON
+
+
+         // Envoi des données au serveur via POST
+         fetch(`${api_srv}/save-file`, {
+            method: 'POST',
+            body: formData, // FormData pour envoyer des fichiers et des données
+         })
+            .then(response => response.json())
+            .then(result => {
+               console.log('Fichier sauvegardé avec succès:', result);
+               alert("Fichier sauvegardé avec succès!");
+            })
+            .catch(error => {
+               console.error('Erreur lors de l\'envoi des données:', error);
+               alert("Erreur lors de la sauvegarde du fichier.");
+            });
+      }
+
+      // Générer le nom de fichier basé sur la structure voulue
+      function generateFileName(jsonSave) {
+         const year = new Date().getFullYear();
+         const projectName = jsonSave.projetName.substring(0, 8).replace(/ /g, '_');
+         const studentClass = jsonSave.studentClass.replace(/ /g, '_');
+         const studentLastName = jsonSave.studentLastName.replace(/ /g, '_');
+         const studentFirstName = jsonSave.studentFirstName.replace(/ /g, '_');
+         return `${year}_${studentClass}_${projectName}_${studentLastName}_${studentFirstName}.json`;
+      }
+
       function toggleCategoryVisibility(category) {
          const categoryElement = document.getElementById(category);
          if (!categoryElement) {
@@ -1124,7 +1311,6 @@
          let laCount = { auto: 0, formative: 0, sommative: 0 };
 
          criteria.forEach(crit => {
-            console.warn(excludedCriteria.toString())
             if (excludedCriteria[crit.id]) {
                count--;
                return; // Ne pas inclure si exclu
@@ -1169,7 +1355,7 @@
                }
 
                // Mettre à jour l'interface utilisateur
-               const slider = document.querySelector(`input[data-id= "${crit.id}"][data-level="${level}"]`);
+               const slider = document.querySelector(`input[data-id="${crit.id}"][data-level="${level}"]`);
                if (slider) {
                   slider.value = sliderValues[level][crit.id];
                   const resultDiv = document.getElementById(`result-${crit.id}`);
@@ -1184,7 +1370,6 @@
 
       renderCategories();
       getDateDefault();
-
    </script>
 </body>
 
