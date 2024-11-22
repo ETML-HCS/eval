@@ -84,6 +84,14 @@
          border-bottom: 2px solid #ccc;
       }
 
+      .tab>span {
+         display: flex;
+         justify-content: center;
+         font-size: 0.79rem;
+         font-weight: bold;
+
+      }
+
       .tab {
          padding: 10px 20px;
          font-size: 16px;
@@ -285,7 +293,7 @@
 
       .criteria-grid {
          display: grid;
-         grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+         grid-template-columns: repeat(auto-fill, minmax(24%, 1fr));
          gap: 10px;
          margin-top: -20px;
       }
@@ -436,11 +444,13 @@
       /* Position relative pour les spans d'appréciation */
       .appreciation-labels {
          position: relative;
-         top: -110px;
-         display: flex;
+         /* top: -105px; */
+         top: -7.55em;
+         /* Équivalent de -105px */
+         /* Alignement vertical */
          justify-content: space-between;
          margin-inline: 15px;
-         height: 50px;
+         height: 45px;
          margin-bottom: -50px;
       }
 
@@ -450,7 +460,7 @@
          position: absolute;
          top: 15px;
          /* Commence le trait à partir du haut du conteneur */
-         bottom: -70px;
+         bottom: -55px;
          /* Fin du trait en bas du conteneur */
          left: 0;
          width: 100.3%;
@@ -671,10 +681,17 @@
 
    <!-- Onglets pour changer de type d'évaluation -->
    <div class="tabs">
-      <div id="tabAuto" class="tab active" onclick="changeTab('auto')">Auto-évaluation</div>
-      <div id="tabFormative" class="tab inactive" onclick="changeTab('formative')">Évaluation formative</div>
-      <div id="tabSommative" class="tab inactive" onclick="changeTab('sommative')">Évaluation sommative</div>
+      <div id="tabAuto" class="tab active" onclick="changeTab('auto')">
+         Auto-évaluation <span id="dateAuto"></span>
+      </div>
+      <div id="tabFormative" class="tab inactive" onclick="changeTab('formative')">
+         Évaluation formative <span id="dateFormative"></span>
+      </div>
+      <div id="tabSommative" class="tab inactive" onclick="changeTab('sommative')">
+         Évaluation sommative <span id="dateSommative"></span>
+      </div>
    </div>
+
 
    <!-- Sections des catégories -->
    <div id="categories"></div>
@@ -738,14 +755,16 @@
          return levels[tabs] ?? -1; // Retourne -1 par défaut si tabs n'est pas valide
       }
 
-      // Fonction pour déterminer le type
+      // Fonction pour déterminer le type d'évaluation en fonction du niveau
       function getType(level) {
          const types = {
-            0: "auto",
-            1: "formative",
-            2: "sommative"
+            0: "auto",       // Niveau 0 -> Auto-évaluation
+            1: "formative",  // Niveau 1 -> Évaluation formative
+            2: "sommative"   // Niveau 2 -> Évaluation sommative
          };
-         return types[level] ?? -1; // Retourne -1 par défaut si level n'est pas valide
+
+         // Retourne le type associé au niveau, ou -1 si le niveau est invalide
+         return types[level] ?? -1;
       }
 
 
@@ -781,26 +800,49 @@
          }
 
          // Mise à jour de la date
-         jsonSave.appreciations[level].date = evalDate;
+         jsonSave.appreciations[level].date = evalDate;  // Assure que la date est sauvegardée dans le JSON
+
+         // Construction du sélecteur pour la date
+         const selectorTab = `#date${capitalizeFirstLetter(getType(level))}`;
+
+         // Mise à jour du DOM avec la nouvelle date
+         document.querySelector(selectorTab).textContent = evalDate;
+
+         // Construction du sélecteur pour l'élément de résultat
+         const selectorResult = `#${getType(level)}-result-box`; // Ajout du `#` pour le sélecteur ID
+
+         // Sélection et ajout du contenu à l'élément de résultat
+         const resultBox = document.querySelector(selectorResult);
+         if (resultBox) {
+            // Créer un nouvel élément span pour afficher la date
+            const span = document.createElement('span');
+            span.textContent = evalDate;  // Définit le texte du span comme la date
+            resultBox.appendChild(span);  // Ajoute le span à la boîte de résultat
+         }
 
          // Mise à jour des critères pour ce niveau
          jsonSave.appreciations[level].criteria = []; // Réinitialiser les critères pour ce niveau
          for (let IdCriteria = 1; IdCriteria <= nbrCriterias; IdCriteria++) {
-            const criteriaElement = document.querySelector(`[data-id="${currentTab}-${IdCriteria}"]`);
-
+            const criteriaElement = document.querySelector(`[data-id= "${currentTab}-${IdCriteria}"]`);
             if (criteriaElement) {
                jsonSave.appreciations[level].criteria.push({
                   id: IdCriteria,
                   name: criteriaElement.getAttribute("data-name"),
-                  value: criteriaElement.value || "na" // Valeur par défaut si vide
+                  value: criteriaElement.value || "na", // Valeur par défaut si vide
+                  checked: document.querySelector(`#exclude-${IdCriteria}`).checked
                });
             } else {
-               console.warn(`Critère non trouvé pour id="${currentTab}-${level}"`);
+               console.warn(`Critère non trouvé pour id = "${currentTab}-${level}"`);
             }
          }
          // Affichage dans la console pour vérifier les données
          console.log("Données mises à jour :", jsonSave);
          alert("Données validées avec succès !");
+      }
+
+      function capitalizeFirstLetter(string) {
+         if (!string) return ''; // Vérifie si la chaîne est vide ou null
+         return string.charAt(0).toUpperCase() + string.slice(1);
       }
 
       function onLoad() {
@@ -828,8 +870,7 @@
                   if (levels.hasOwnProperty(level)) {
                      const criteria = levels[level].criteria;
                      criteria.forEach(item => {
-
-                        const criteriaElement = document.querySelector(`[data-id="${getType(level)}-${item.id}"]`);
+                        const criteriaElement = document.querySelector(`[data - id= "${getType(level)}-${item.id}"]`);
 
                         if (criteriaElement) {
                            criteriaElement.value = item.value;
@@ -897,47 +938,56 @@
             const header = document.createElement('div');
             header.className = 'category-header';
             header.innerHTML = `
-            <h2>${category}</h2>
-            <button onclick="toggleCategoryVisibility('${category}')">
-                ${visibleCategories[category] ? 'Cacher ▲' : 'Afficher ▼'}
-            </button>`;
+<h2>${category}</h2>
+<button onclick="toggleCategoryVisibility('${category}')"> 
+   ${visibleCategories[category] ? 'Cacher ▲' : 'Afficher ▼'}
+</button>
+`;
             container.appendChild(header);
 
             const criteriaDiv = document.createElement('div');
             criteriaDiv.className = 'criteria-grid';
             criteriaDiv.id = category;
+
             groupedCriteria[category].forEach(crit => {
                const card = document.createElement('div');
                card.className = 'criterion-card';
-               card.innerHTML = `<div class="criterion-name">${crit.name}</div>
-               <div class="slider-container">
-                  ${['auto', 'formative', 'sommative'].map(level => `
-                     <label class='labelEval'>${level.charAt(0).toUpperCase() + level.slice(1)}:</label>
-                     <input type="range" min="0" max="3" class="slider" 
-                        data-id="${level}-${crit.id}" 
-                        data-name="${crit.name}"
-                        data-level="${level}"
-                        value="${sliderValues[level]?.[crit.id] || 0}"
-                        oninput="updateSliderValue(this)" 
-                        ${currentTab !== level ? 'disabled' : ''}>
-                  `).join('')}
-               </div>
-               <div class="appreciation-labels">
-                  ${appreciationLabels.map((label, i) => `
-                  <span id="${label}-${currentTab}-${crit.id}">${label}</span>
-                  `).join('')}
-                  </div>
-                  <div id="result-${crit.id}" class="result-box bg-gray">
-                     ${appreciationLabels[sliderValues[currentTab]?.[crit.id] || 0]}
-                     </div>
-                     <div class="exclude-checkbox">
-                        <label>
-                           <input type="checkbox" id="exclude-${crit.id}"
-                              onclick="toggleExclusion(${crit.id})"
-                              ${excludedCriteria[crit.id] ? 'checked' : ''}>
-                              Exclure de l'évaluation
-                        </label>
-                     </div>`;
+               card.innerHTML = `
+   <div class="criterion-name">${crit.name}</div>
+   <div class="slider-container">
+      ${['auto', 'formative', 'sommative'].map(level => `
+         <label class='labelEval' for="${level}-${crit.id}">
+            ${level.charAt(0).toUpperCase() + level.slice(1)}:
+         </label>
+         <input type="range" min="0" max="3" class="slider"
+            id="${level}-${crit.id}" 
+            data-id="${level}-${crit.id}" 
+            data-name="${crit.name}"
+            data-level="${level}"
+            value="${sliderValues[level]?.[crit.id] || 0}"
+            oninput="updateSliderValue(this)" 
+            ${currentTab !== level ? 'disabled' : ''}>
+      `).join('')}
+   </div>
+   <div class="appreciation-labels">
+      ${appreciationLabels.map((label, i) => `
+         <span id="${label}-${currentTab}-${crit.id}">
+            ${label}
+         </span>
+      `).join('')}
+   </div>
+   <div id="result-${crit.id}" class="result-box bg-gray">
+      ${appreciationLabels[sliderValues[currentTab]?.[crit.id] || 0]}
+   </div>
+   <div class="exclude-checkbox">
+      <label>
+         <input type="checkbox" id="exclude-${crit.id}" 
+            onclick="toggleExclusion(${crit.id})"
+            ${excludedCriteria[crit.id] ? 'checked' : ''}>
+         Exclure de l'évaluation
+      </label>
+   </div>
+`;
                criteriaDiv.appendChild(card);
             });
             container.appendChild(criteriaDiv);
