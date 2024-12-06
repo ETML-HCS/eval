@@ -1,0 +1,152 @@
+{
+  "projetName": "Gestionnaire de mots de passe",
+  "studentLastName": "Costa Lopes",
+  "studentFirstName": "Helder",
+  "studentClass": "Grp2A",
+  "studentRemark": "Bla bla ! bravo pour vos efforts sur ce projet. \n",
+  "appreciations": [
+    {
+      "date": "2024-11-20",
+      "criteria": [
+        {
+          "id": 1,
+          "name": "Rythme de travail",
+          "value": "1",
+          "checked": false
+        },
+        {
+          "id": 2,
+          "name": "Qualité du travail",
+          "value": "1",
+          "checked": false
+        },
+        {
+          "id": 3,
+          "name": "Niveau de maîtrise technique",
+          "value": "1",
+          "checked": false
+        },
+        {
+          "id": 4,
+          "name": "Autonomie",
+          "value": "2",
+          "checked": false
+        },
+        {
+          "id": 5,
+          "name": "Processus de travail",
+          "value": "2",
+          "checked": false
+        },
+        {
+          "id": 6,
+          "name": "Expression orale et écrite",
+          "value": "1",
+          "checked": false
+        },
+        {
+          "id": 7,
+          "name": "Durabilité et innovation",
+          "value": "1",
+          "checked": false
+        },
+        {
+          "id": 8,
+          "name": "Aptitude au travail en équipe",
+          "value": "2",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "date": "2024-11-20",
+      "criteria": [
+        {
+          "id": 1,
+          "name": "Rythme de travail",
+          "value": "3"
+        },
+        {
+          "id": 2,
+          "name": "Qualité du travail",
+          "value": "2"
+        },
+        {
+          "id": 3,
+          "name": "Niveau de maîtrise technique",
+          "value": "2"
+        },
+        {
+          "id": 4,
+          "name": "Autonomie",
+          "value": "3"
+        },
+        {
+          "id": 5,
+          "name": "Processus de travail",
+          "value": "1"
+        },
+        {
+          "id": 6,
+          "name": "Expression orale et écrite",
+          "value": "2"
+        },
+        {
+          "id": 7,
+          "name": "Durabilité et innovation",
+          "value": "3"
+        },
+        {
+          "id": 8,
+          "name": "Aptitude au travail en équipe",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "date": "2024-11-20",
+      "criteria": [
+        {
+          "id": 1,
+          "name": "Rythme de travail",
+          "value": "3"
+        },
+        {
+          "id": 2,
+          "name": "Qualité du travail",
+          "value": "2"
+        },
+        {
+          "id": 3,
+          "name": "Niveau de maîtrise technique",
+          "value": "3"
+        },
+        {
+          "id": 4,
+          "name": "Autonomie",
+          "value": "3"
+        },
+        {
+          "id": 5,
+          "name": "Processus de travail",
+          "value": "3"
+        },
+        {
+          "id": 6,
+          "name": "Expression orale et écrite",
+          "value": "3"
+        },
+        {
+          "id": 7,
+          "name": "Durabilité et innovation",
+          "value": "3"
+        },
+        {
+          "id": 8,
+          "name": "Aptitude au travail en équipe",
+          "value": "2"
+        }
+      ]
+    }
+  ]
+}

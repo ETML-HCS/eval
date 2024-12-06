@@ -1,0 +1,836 @@
+/* --- Styles Généraux --- */
+body {
+   font-family: Arial, sans-serif;
+   margin: 2px;
+   padding: 12px;
+   background-color: #f8f9fa;
+   color: #333;
+}
+
+/* #page2 {
+   display: none;
+} */
+
+button {
+   background: linear-gradient(135deg, #4a90e2, #357ABD);
+   color: white;
+   border: none;
+   border-radius: 12px;
+   padding: 2px 7px;
+   font-size: 12px;
+   font-weight: 500;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   position: relative;
+   overflow: hidden;
+   height: 30px;
+   width: 70px;
+}
+
+button::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: rgba(255, 255, 255, 0.15);
+   transform: translateX(-100%);
+   transition: transform 0.4s ease;
+}
+
+button:hover::before {
+   transform: translateX(100%);
+}
+
+button:hover {
+   background: linear-gradient(135deg, #357ABD, #4a90e2);
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+   transform: scale(0.98);
+}
+
+h1 {
+   text-align: center;
+   color: #444;
+   font-size: 25px;
+}
+
+h3 {
+   font-size: 16px;
+   color: #333;
+   margin-bottom: 10px;
+}
+
+p {
+   font-size: 1rem;
+   line-height: 1.1;
+   color: #555;
+}
+
+/* --- style des 3 onglets --- */
+.tabs {
+   display: flex;
+   flex-direction: row;
+   justify-content: start;
+   gap: 2px;
+   /* margin-block: 15px; */
+   border-bottom: 2px solid #ccc;
+}
+
+.tab>span {
+   display: flex;
+   justify-content: center;
+   font-size: 0.79rem;
+   font-weight: bold;
+
+}
+
+.tab {
+   padding: 10px 15px;
+   font-size: 15px;
+   font-weight: bold;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   border-radius: 8px 8px 0 0;
+}
+
+/* Onglet actif */
+.tab.active {
+   color: white;
+   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#tabAuto.active {
+   background-color: #22f834;
+}
+
+#tabFormative.active {
+   background-color: #f3b33c;
+}
+
+#tabSommative.active {
+   background-color: #eb4c25;
+}
+
+/* Onglet inactif */
+.tab.inactive {
+   /* Couleur de fond grise claire */
+   color: #777;
+   /* Texte gris */
+   border-bottom: 3px solid transparent;
+   /* Pas de bordure sous l'onglet inactif */
+}
+
+.tab:hover {
+   background-color: #e1e1e1;
+   color: #333;
+}
+
+.tab-disabled {
+   cursor: not-allowed;
+   background-color: #e0e0e0 !important;
+   /* Gris clair pour indiquer l'onglet désactivé */
+   color: #a0a0a0 !important;
+   /* Couleur plus claire pour le texte */
+   pointer-events: none;
+   /* Empêche toute interaction */
+   box-shadow: none;
+   /* Pour éviter toute bordure/clignotement */
+}
+
+/* --- Conteneur Résultats --- */
+#result-container {
+   display: flex;
+   flex-wrap: wrap-reverse;
+   justify-content: end;
+   align-items: end;
+   gap: 10px;
+   font-size: 12px;
+   margin-bottom: 15px;
+}
+
+.result-box {
+   position: relative;
+   padding: 6px 4px;
+   border: 2px solid #555454;
+   border-radius: 8px;
+   min-width: 100px;
+   min-height: 90px;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+.result-box>h3 {
+   text-align: center;
+   font-size: 1em !important;
+   color: white !important;
+}
+
+.result-box p {
+   text-align: center;
+   font-size: 1.1em;
+   margin-top: 0;
+   margin-bottom: 15px;
+   font-weight: bold;
+   color: white;
+   border: none;
+}
+
+.key {
+   font-size: 1.2rem;
+   padding: 10px 6px !important;
+}
+
+.result-box .info-evaluation {
+   display: none;
+   position: absolute;
+   background-color: white;
+   border: 1px solid #ccc;
+   padding: 10px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+   width: 200px;
+   bottom: 120%;
+   left: -50%;
+   font-size: 12px;
+   text-align: justify;
+}
+
+.result-box:hover .info-evaluation {
+   display: block;
+}
+
+.bg-gray {
+   display: none;
+}
+
+/* --- Formulaires --- */
+.form-container {
+   grid-column: 1;
+   display: flex;
+   position: relative;
+   flex-wrap: wrap;
+   justify-content: center;
+   align-items: center;
+   gap: 2%;
+   background: #fff;
+   padding: 8px;
+   border-radius: 8px;
+   border: 1px solid #ccc;
+}
+
+.form-group {
+   width: 48%;
+   margin-bottom: 6px;
+}
+
+.two {
+   display: flex;
+   flex-direction: row;
+   justify-content: space-between;
+}
+
+.form-group>div {
+   display: flex;
+   flex-direction: column;
+   width: 48%;
+}
+
+.form-group label {
+   display: block;
+   margin-bottom: 3px;
+   font-weight: bold;
+   font-size: 0.95rem;
+   visibility: visible;
+}
+
+.form-group input,
+.remark-area,
+select {
+   padding: 6px;
+   font-size: 14px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   width: 100%;
+   box-sizing: border-box;
+}
+
+.remark-area {
+   resize: none;
+   min-height: 40px;
+}
+
+
+
+/* --- Étudiants --- */
+.student-info {
+
+   padding: 10px;
+   background: #e9f1f9;
+   border: 1px solid #ccd9e6;
+   border-radius: 8px;
+   margin-bottom: 20px;
+}
+
+.student-info h3 {
+   font-size: 16px;
+   margin-bottom: 5px;
+   color: #007bff;
+}
+
+.autocomplete-items {
+   border: 1px solid #d4d4d4;
+   border-bottom: none;
+   border-top: none;
+   z-index: 99;
+   /* Position the autocomplete items to be the same width as the container: */
+   position: absolute;
+   border-bottom: 1px solid #d4d4d4;
+   border-top: 1px solid #d4d4d4;
+}
+
+.autocomplete-items div {
+   padding: 10px;
+   cursor: pointer;
+   background-color: #fff;
+   border-bottom: 1px solid #d4d4d4;
+}
+
+.autocomplete-items div:hover {
+   background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+   background-color: DodgerBlue !important;
+   color: #ffffff;
+}
+
+
+/* --- Catégories --- */
+#categories {
+   display: flex;
+   flex-direction: column;
+   background-color: #22f8343d;
+}
+
+.category-container {
+   padding: 8px;
+   border: 1px solid #ccc;
+   border-radius: 8px;
+   background-color: #fff;
+   margin: 3px;
+}
+
+.category-header {
+   grid-column: 2 span;
+   display: flex;
+   position: relative;
+   top: -20px;
+   width: 100%;
+   justify-content: space-between;
+   font-size: 12px;
+   font-weight: bold;
+   color: #333;
+}
+
+.criteria-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(24%, 1fr));
+   gap: 10px;
+   margin-top: -20px;
+}
+
+.criterion-card {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+   padding: 6px;
+   border-left: 2px solid #007bff;
+   background: #d7cecb0a;
+}
+
+.criterion-name {
+   font-size: 1rem;
+   font-weight: bold;
+   color: #444;
+}
+
+[id^="remarks-"] {
+   display: flex;
+   justify-content: center;
+}
+
+[id^="remarks-"]>textarea {
+   width: 95%;
+   resize: none;
+   border: 1px solid blue;
+}
+
+[id^="remarks-"]>textarea:hover {
+   transform: scale(1.05);
+   transition: transform 0.3s ease;
+}
+
+.remarks-container {
+   position: relative;
+   margin-bottom: 1em;
+}
+
+.remarks-textarea {
+   width: 100%;
+   resize: none;
+   padding: 0.5em;
+   font-size: 1em;
+
+}
+
+/* Style pour un textarea désactivé */
+textarea:disabled {
+   background-color: #f0f0f0a5;
+   /* Couleur de fond grise */
+   opacity: 0.5;
+   /* Opacité réduite */
+   border: none;
+}
+
+.remarks-button {
+   background: none;
+   border: none;
+   font-size: 1em;
+   cursor: pointer;
+   position: absolute;
+   top: 0.5em;
+   right: -0.8em;
+   width: auto;
+}
+
+.remarks-description {
+   display: none;
+   position: absolute;
+   top: 2em;
+   right: 0.5em;
+   background-color: #fff;
+   border: 1px solid #ccc;
+   padding: 0.5em;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+   z-index: 1000;
+   font-size: 0.9em;
+   color: #555;
+}
+
+.remarks-description.show {
+   display: block;
+}
+
+.slider-container {
+   z-index: 10;
+}
+
+/* Curseur */
+.slider {
+   width: 99%;
+   height: 6px;
+   border-radius: 5px;
+   background: #ddd;
+   -webkit-appearance: none;
+   appearance: none;
+   outline: none;
+   transition: background 0.3s ease;
+}
+
+/* Effet au survol de la piste */
+.slider:hover {
+   background: #afb1db;
+   /* Piste un peu plus foncée au survol */
+}
+
+/* Curseur désactivé */
+.slider:disabled {
+   background: #e0e0e0;
+   /* Couleur plus claire pour indiquer qu'il est désactivé */
+}
+
+/* Bouton du curseur */
+.slider::-webkit-slider-thumb {
+   -webkit-appearance: none;
+   appearance: none;
+   width: 20px;
+   height: 20px;
+   background-color: #007bff;
+   border-radius: 50%;
+   cursor: pointer;
+   transition: background-color 0.3s ease;
+}
+
+/* Effet au survol du bouton */
+.slider::-webkit-slider-thumb:hover {
+   background-color: #0056b3;
+   /* Couleur plus foncée au survol */
+}
+
+/* Bouton désactivé */
+.slider:disabled::-webkit-slider-thumb {
+   background-color: #b0b0b0;
+   /* Couleur plus claire pour le bouton désactivé */
+   cursor: not-allowed;
+}
+
+/* Pour Firefox */
+.slider::-moz-range-thumb {
+   width: 20px;
+   height: 20px;
+   background-color: #007bff;
+   border-radius: 50%;
+   cursor: pointer;
+   transition: background-color 0.3s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+   background-color: #0056b3;
+}
+
+/* Bouton désactivé pour Firefox */
+.slider:disabled::-moz-range-thumb {
+   background-color: #b0b0b0;
+   /* Couleur plus claire pour le bouton désactivé */
+   cursor: not-allowed;
+}
+
+/* Valeur du curseur */
+.slider-value {
+   font-size: 0.9rem;
+   color: #333;
+   text-align: right;
+}
+
+
+[id^="auto-"] {
+   background-color: #22f834;
+   border: 1px solid #ccc;
+   padding: 2px;
+   box-sizing: border-box;
+}
+
+
+[id^="formative-"] {
+   background-color: #f3b33c;
+   border: 1px solid #ccc;
+   padding: 2px;
+   box-sizing: border-box;
+}
+
+[id^="sommative-"] {
+   background-color: #eb4c25;
+   border: 1px solid #ccc;
+   padding: 2px;
+   box-sizing: border-box;
+}
+
+.labelEval {
+   visibility: hidden;
+}
+
+/* Position relative pour les spans d'appréciation */
+.appreciation-labels {
+   position: relative;
+   /* top: -105px; */
+   top: -7.55em;
+   /* Équivalent de -105px */
+   /* Alignement vertical */
+   justify-content: space-between;
+   margin-inline: 15px;
+   height: 45px;
+   margin-bottom: -50px;
+}
+
+/* Ajouter les traits verticaux */
+.appreciation-labels::before {
+   content: '';
+   position: absolute;
+   top: 15px;
+   /* Commence le trait à partir du haut du conteneur */
+   bottom: -55px;
+   /* Fin du trait en bas du conteneur */
+   left: 0;
+   width: 100.3%;
+   /* S'assure que le trait s'étend sur toute la largeur */
+   background: linear-gradient(to right,
+         transparent 0%,
+         /* Pas de ligne avant 0% */
+         #ccc 0%,
+         /* Ligne à 0% */
+         #ccc 2px,
+         /* Largeur du trait à 0% */
+         transparent 2px,
+         /* Espace après la ligne à 0% */
+         transparent 33.4%,
+         #ccc 33.4%,
+         #ccc calc(33.4% + 2px),
+         transparent calc(33.4% + 2px),
+         transparent 66.6%,
+         #ccc 66.6%,
+         #ccc calc(66.6% + 2px),
+         transparent calc(66.6% + 1px),
+         transparent 99.7%,
+         #ccc 99.7%,
+         #ccc calc(99.7% + 2px));
+   pointer-events: none;
+   /* Empêche l'interaction avec le trait */
+   z-index: 1;
+   /* Met le trait derrière les éléments comme les sliders */
+}
+
+/* Labels */
+.appreciation-labels span {
+   position: absolute;
+   /* Place les labels sous les traits */
+   transform: translateX(-50%);
+   white-space: nowrap;
+   font-size: 12px;
+   /* Ajuster la taille des labels */
+}
+
+/* Positions des labels */
+.appreciation-labels span:nth-child(1) {
+   left: 0%;
+}
+
+.appreciation-labels span:nth-child(2) {
+   left: 33.4%;
+}
+
+.appreciation-labels span:nth-child(3) {
+   left: 66.9%;
+}
+
+.appreciation-labels span:nth-child(4) {
+   left: 99%;
+}
+
+/* Checkbox pour exclure */
+.exclude-checkbox {
+   margin-top: 2px;
+   margin-left: 5px;
+}
+
+.exclude-checkbox label {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+}
+
+/* --- Système de persistance des données --- */
+
+/* Conteneur principal */
+#backupSystem {
+   display: flex;
+   position: absolute;
+   top: 30px;
+   width: 100%;
+   right: 25px;
+   justify-content: flex-end;
+   gap: 5px;
+   /* Espacement entre chaque section */
+}
+
+/* Conteneurs spécifiques */
+#backupSystem .validation,
+#backupSystem .load,
+#backupSystem .save {
+   display: flex;
+   align-items: center;
+}
+
+/* Boutons génériques */
+#backupSystem button {
+   width: 100px;
+   height: 25px;
+   background: linear-gradient(135deg, #4a90e2, #357ABD);
+   color: white;
+   border: none;
+   border-radius: 8px;
+   font-size: 14px;
+   font-weight: bold;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#backupSystem button:hover {
+   background: linear-gradient(135deg, #357ABD, #4a90e2);
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+   transform: translateY(-2px);
+}
+
+#backupSystem button:active {
+   transform: scale(0.95);
+   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Focus pour accessibilité */
+#backupSystem button:focus {
+   outline: none;
+   box-shadow: 0 0 0 3px rgba(72, 144, 226, 0.6);
+}
+
+/* Media query pour les petits écrans */
+@media (max-width: 1224px) {
+   .burger-menu {
+      display: flex !important;
+   }
+
+   .menu-item {
+      display: none;
+   }
+}
+
+/* --- Bouton Burger --- */
+.burger-menu {
+   display: none;
+   flex-direction: column;
+   position: absolute;
+   top: 10px;
+   margin: 0px;
+   cursor: pointer;
+   z-index: 10;
+}
+
+.burger-menu div {
+   width: 20px;
+   height: 3px;
+   background-color: black;
+   margin: 2px 0;
+   transition: all 0.3s ease;
+}
+
+.modal {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: rgba(0, 0, 0, 0.7);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   z-index: 100;
+}
+
+.modal-content {
+   background: #fff;
+   padding: 20px;
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+   width: 300px;
+   text-align: center;
+}
+
+.modal-inputs {
+   display: flex;
+   height: 50px;
+   justify-content: space-between;
+   gap: 4px;
+   align-items: center;
+   vertical-align: middle;
+   box-sizing: content-box;
+}
+
+.modal-group {
+   text-align: left;
+}
+
+.modal-group>input {
+   padding: 5px;
+   margin: 0 auto;
+
+}
+
+.modal-actions {
+   margin-top: 20px;
+   display: flex;
+   justify-content: space-between;
+}
+
+.hidden {
+   display: none;
+}
+
+.full-width {
+   display: flex;
+   width: 100%;
+}
+
+
+.fw80 {
+   width: 75%;
+   margin: 5px;
+}
+
+.fw20 {
+   width: 25%;
+   margin: 5px;
+}
+
+
+@media (max-width: 1328px) {
+
+   .fw80 {
+      width: 70%;
+      margin: 5px;
+   }
+
+   .fw20 {
+      width: 30%;
+      margin: 5px;
+   }
+}
+
+
+@media (max-width: 1115px) {
+
+   .fw80 {
+      width: 67%;
+      margin: 5px;
+   }
+
+   .fw20 {
+      width: 33%;
+      margin: 5px;
+   }
+}
+
+@media (max-width: 1018px) {
+
+   .fw80 {
+      width: 60%;
+      margin: 5px;
+   }
+
+   .fw20 {
+      width: 40%;
+      margin: 5px;
+   }
+}
+
+@media (max-width: 850px) {
+   .full-width {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+   }
+
+   .fw80 {
+      width: 100%;
+
+   }
+
+   .fw20 {
+      width: 100%;
+
+   }
+}

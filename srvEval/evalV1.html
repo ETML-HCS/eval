@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="style.css">
+   <title>Évaluation projet</title>
+</head>
+
+<body>
+
+   <h1>Évaluation des compétences</h1>
+
+   <!-- Bouton burger -->
+   <div class="burger-menu" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+   </div>
+
+   <!-- Persistance des données -->
+   <div id="backupSystem" class="backup-container menu">
+      <div class="menu-item">
+         <button id="sendButton" class="btn-primary" onclick="openSendModal()">Envoyer</button>
+         <span id="sendFeedback" class="feedback hidden"></span>
+      </div>
+      <div class="menu-item">
+         <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="onLoad()" />
+         <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">Importer</button>
+      </div>
+      <div class="menu-item">
+         <button class="btn-secondary" onclick="onSave()">Exporter</button>
+      </div>
+      <div class="menu-item">
+         <button class="btn-secondary" onclick="onValidation()">Valider</button>
+      </div>
+   </div>
+
+   <div id="page1">
+      <!-- Informations de l'élève -->
+      <div class="student-info" id="student-info">
+
+         <div class="category-header">
+            <h3>INFORMATICIEN-NE</h3>
+            <!-- Bouton pour cacher/afficher les infos de l'élève -->
+            <button id="toggleButton" onclick="toggleVisibility('student-info')">
+               Afficher▼</button>
+         </div>
+
+         <div class="form-container">
+            <div id="project-form" class="form-group">
+               <label for="project">Nom du projet :</label>
+               <select name="project" id="project-select" onchange="handleSelection('project')" style="display: block;">
+               </select>
+               <input type="text" id="project-name" placeholder="Saisir le nom du projet" style="display: none;">
+            </div>
+
+            <div class="form-group two">
+               <div class="form-group">
+                  <label for="evaluation-date">Fait le :</label>
+                  <input type="date" id="evaluation-date">
+               </div>
+
+               <div class="form-group">
+                  <label for="teacher">Évaluateur :</label>
+                  <select name="teacher" id="teacher-select" onchange="handleSelection('teacher')"
+                     style="display: block;">
+                  </select>
+                  <input type="text" id="teacher-name" placeholder="Saisir l'enseignant" style="display: none;">
+               </div>
+            </div>
+
+            <div class="form-group two">
+               <div>
+                  <label for="student-name">Nom :</label>
+                  <input type="text" id="student-lastName" placeholder="Saisir le nom">
+               </div>
+               <div>
+                  <label for="student-name">Prénom :</label>
+                  <input type="text" id="student-firstName" placeholder="Saisir le prénom">
+               </div>
+            </div>
+
+            <div class="form-group" style="position:relative;">
+               <label for="student-class">Recherche ta classe :</label>
+               <input type="text" id="student-class" placeholder="Saisir la classe">
+            </div>
+         </div>
+
+      </div>
+      <!-- <div style="text-align: right; margin-right:5px;">
+            <button type="button" onclick="nextPage('#page2', '#page1')">Sauvé</button>
+         </div> -->
+   </div>
+
+   <div id="page2">
+      <!-- Modal pour les données supplémentaires -->
+      <div id="sendModal" class="modal hidden">
+         <div class="modal-content">
+            <h3>Informations supplémentaires</h3>
+
+            <form id="sendForm" onsubmit="processSend(event)" method="get">
+               <div class="modal-inputs">
+                  <div class="modal-group">
+                     <label for="pseudo">Pseudo :</label>
+                     <input type="text" id="pseudo" name="pseudo" required />
+                  </div>
+                  <div class="modal-group">
+                     <label for="code">Code :</label>
+                     <input type="password" id="code" name="code" required />
+                  </div>
+               </div>
+               <div class="modal-actions">
+                  <button type="submit" class="btn-primary">Confirmer</button>
+                  <button type="button" class="btn-secondary" onclick="closeSendModal()">Annuler</button>
+               </div>
+            </form>
+
+         </div>
+      </div>
+
+      <!-- Onglets pour changer de type d'évaluation -->
+      <div class="tabs">
+         <div id="tabAuto" class="tab active" onclick="changeTab('auto')">
+            Auto-évaluation
+         </div>
+         <div id="tabFormative" class="tab inactive" onclick="changeTab('formative')">
+            Évaluation formative
+         </div>
+         <div id="tabSommative" class="tab inactive" onclick="changeTab('sommative')">
+            Évaluation sommative
+         </div>
+      </div>
+
+      <!-- Sections des catégories -->
+      <div id="categories"></div>
+
+      <div class="full-width">
+         <div class="fw80">
+            <label for="remarks">Remarques :</label>
+            <textarea id="remarks" class="remark-area" rows="4" placeholder="Ajoutez vos remarques ici..."></textarea>
+         </div>
+
+         <!-- Conteneur pour afficher les résultats des trois onglets -->
+         <div id="result-container" class="fw20">
+
+            <div class="result-box" id="auto-result-box">
+               <h3>Self Eval</h3>
+               <p id="auto-average">0</p>
+               <span class="info-evaluation">
+                  L’auto-évaluation permet à l’élève de réfléchir sur ses propres performances et progrès.
+                  Elle encourage la prise de conscience et l’autonomie dans le processus d’apprentissage.
+               </span>
+            </div>
+
+            <div class="result-box" id="formative-result-box">
+               <h3>Formative</h3>
+               <p id="formative-average">0</p>
+               <span class="info-evaluation">
+                  L’évaluation formative est un outil continu qui vise à guider l’apprentissage des élèves.
+                  Elle permet d’identifier les forces et les domaines à améliorer pour progresser.
+               </span>
+            </div>
+
+            <div class="result-box key" id="sommative-result-box">
+               <h3>Sommative</h3>
+               <p id="sommative-average">0</p>
+               <span class="info-evaluation">
+                  L’évaluation sommative se déroule à la fin d’une période d’apprentissage
+                  (comme un semestre ou une année scolaire).
+                  Elle vise à évaluer les acquis des élèves par rapport à un référentiel ou à des normes.
+               </span>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <script type="module" src="main.js" defer></script>
+
+   </script>
+</body>
+
+
+</html>

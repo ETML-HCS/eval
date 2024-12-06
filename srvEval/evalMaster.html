@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>EMI v1</title>
+
+   <!-- Font Awesome -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+   <style>
+      /* Globale */
+      :root {
+         --primary-color: cornflowerblue;
+         --secondary-color: #4b79da;
+         --error-color: red;
+         --text-color: #333;
+         --background-color: #fff;
+         --focus-shadow: rgba(100, 149, 237, 0.5);
+         --modal-bg: rgba(0, 0, 0, 0.5);
+      }
+
+      body {
+         font-family: Arial, sans-serif;
+         margin: 0;
+         padding: 0;
+         color: var(--text-color);
+         background-color: var(--background-color);
+      }
+
+      header {
+         text-align: center;
+         padding: 20px;
+         background-color: var(--primary-color);
+         color: #fff;
+      }
+
+      h1 {
+         margin: 0;
+         font-size: 1.8rem;
+      }
+
+      footer {
+         text-align: center;
+         padding: 10px;
+         background-color: #f4f4f4;
+         position: fixed;
+         bottom: 0;
+         width: 100%;
+         box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Connexion */
+
+      .modal-container {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         position: fixed;
+         inset: 0;
+         background-color: var(--modal-bg);
+         opacity: 0;
+         pointer-events: none;
+         transition: opacity 0.3s ease;
+         z-index: 9999;
+      }
+
+      .modal-container.show {
+         opacity: 1;
+         pointer-events: auto;
+      }
+
+      .modal {
+         background-color: var(--background-color);
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+         width: 100%;
+         max-width: 400px;
+         text-align: center;
+      }
+
+      .btn-primary {
+         width: 100%;
+         padding: 10px 15px;
+         background-color: var(--primary-color);
+         color: white;
+         font-weight: bold;
+         border: none;
+         border-radius: 4px;
+         font-size: 1rem;
+         cursor: pointer;
+         transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .btn-primary:hover {
+         background-color: var(--secondary-color);
+         transform: scale(1.05);
+      }
+
+      .error {
+         color: var(--error-color);
+         font-size: 0.9rem;
+         margin-top: 5px;
+      }
+
+      .hidden {
+         display: none;
+      }
+
+      .spinner {
+         display: inline-block;
+         width: 20px;
+         height: 20px;
+         border: 3px solid rgba(255, 255, 255, 0.3);
+         border-top-color: var(--primary-color);
+         border-radius: 50%;
+         animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+         to {
+            transform: rotate(360deg);
+         }
+      }
+
+      .form-group {
+         margin-bottom: 15px;
+         text-align: left;
+      }
+
+      label {
+         display: block;
+         margin-bottom: 5px;
+         font-weight: bold;
+      }
+
+      input {
+         width: 100%;
+         padding: 8px;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         font-size: 1rem;
+      }
+
+      input:focus {
+         outline: none;
+         box-shadow: 0 0 5px var(--focus-shadow);
+         border-color: var(--primary-color);
+      }
+
+
+      /* Search */
+      main {
+         padding: 10px 20px;
+
+      }
+
+      fieldset {
+         width: 85%;
+         margin: 0 auto;
+      }
+
+      .filter-form.compact.horizontal {
+         display: grid;
+         grid-template-columns: repeat(2, 1fr);
+         gap: 10px;
+         margin-top: 10px;
+         max-width: 800px;
+         /* Limite la largeur maximale */
+         margin-left: auto;
+         margin-right: auto;
+         /* Centre le formulaire horizontalement */
+      }
+
+      @media (max-width: 650px) {
+         .filter-form.compact.horizontal {
+            display: block;
+            flex-direction: row;
+         }
+
+         .form-row input {
+            width: 250px !important;
+         }
+      }
+
+      .form-row {
+         display: flex;
+         align-items: center;
+         position: relative;
+         margin: 2px;
+      }
+
+      .form-row label {
+         flex: 0 0 85px;
+         font-size: 1rem;
+         font-weight: bold;
+         color: #333;
+      }
+
+      .form-row input {
+         flex: 1;
+         padding: 10px 12px;
+         font-size: 1rem;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         background-color: #f9f9f9;
+         padding-left: 40px;
+         /* Décalage pour les icônes */
+         transition: all 0.3s ease;
+         box-sizing: border-box;
+         width: 150px;
+      }
+
+      .form-row input:focus {
+         outline: none;
+         border-color: var(--primary-color);
+         box-shadow: 0 0 5px rgba(100, 149, 237, 0.5);
+         /* Effet focus */
+      }
+
+      .form-row .input-icon {
+         position: absolute;
+         left: 10px;
+         top: 50%;
+         transform: translateY(-50%);
+         font-size: 1.2rem;
+         color: #777;
+      }
+
+      .form-actions {
+         grid-column: 1/3;
+      }
+
+      button.btn-primary {
+         padding: 10px 20px;
+         font-size: 1rem;
+         background-color: var(--primary-color);
+         color: white;
+         font-weight: bold;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+         transition: background-color 0.3s ease;
+      }
+
+      button.btn-primary:hover {
+         background-color: var(--secondary-color);
+      }
+
+      button.btn-primary:active {
+         transform: scale(0.98);
+         /* Effet de clic */
+      }
+
+      /* Aide réduite (si nécessaire) */
+      .help-text {
+         font-size: 0.8rem;
+         color: #666;
+         margin-top: 5px;
+         padding-left: 10px;
+      }
+
+      /*** Liste des porjets selon la recherche  ***/
+
+      .listEvaluation {
+         padding: 10px 20px;
+         justify-content: space-around;
+      }
+
+      /* Style général des cartes */
+      .evaluation-card {
+         width: 250px;
+         border: 1px solid #ccc;
+         border-radius: 6px;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         padding: 16px;
+         margin: 16px;
+         display: flex;
+         position: relative;
+         flex-wrap: wrap;
+         justify-content: space-around;
+         flex-direction: column;
+         gap: 16px;
+         background-color: #fff;
+         font-family: Arial, sans-serif;
+      }
+
+      /* Titre du projet */
+      .project-title {
+         text-align: center;
+         font-size: 1.5em;
+         margin-bottom: 8px;
+         color: #333;
+      }
+
+      /* Nom de l'étudiant */
+      .student-name {
+         text-align: center;
+         font-size: 1.2em;
+         color: #555;
+         margin-bottom: 12px;
+      }
+
+      /* Date */
+      .evaluation-date {
+         cursor: pointer;
+         /* Change le curseur pour indiquer que c'est cliquable */
+         transition: transform 0.2s, box-shadow 0.2s;
+         font-size: 0.9em;
+         color: #777;
+         margin-bottom: auto;
+         /* Pousse l'évaluateur en bas */
+      }
+
+      .evaluation-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Evaluateur en bas à droite */
+      .evaluator {
+         font-size: 0.8em;
+         color: #888;
+         position: absolute;
+         bottom: 8px;
+         right: 12px;
+         text-align: right;
+      }
+   </style>
+</head>
+
+<body>
+   <header>
+      <h1>Consultation des évaluations</h1>
+   </header>
+
+   <!-- Modale de connexion -->
+   <div id="modal-container" class="modal-container">
+      <div class="modal">
+         <h2>Connexion</h2>
+         <p>
+            <strong>Enseignants :</strong> Login d'au moins 3 caractères.<br>
+            <strong>Élèves :</strong> Login de 7 caractères.
+         </p>
+         <form id="loginForm" method="post">
+            <div class="form-group">
+               <label for="idLogin">Login :</label>
+               <input type="text" id="idLogin" name="login" required minlength="3" maxlength="7">
+               <small id="loginError" class="error"></small>
+            </div>
+            <div class="form-group">
+               <label for="idPassword">Mot de passe :</label>
+               <input type="password" id="idPassword" name="password" required>
+               <small id="passwordError" class="error"></small>
+            </div>
+            <button type="submit" class="btn-primary">Connexion</button>
+         </form>
+      </div>
+   </div>
+
+   <main>
+
+      <h2>Filtres</h2>
+      <div id="userInfo" class="hidden">
+         <p id="userRole"></p>
+         <p id="userLogin"></p>
+      </div>
+
+      <form id="filterForm" onsubmit="searchEvaluation(event)" method="post" class="hidden">
+         <fieldset class=" filter-form compact horizontal">
+            <legend>Critères de recherche</legend>
+
+            <div class="form-row">
+               <label for="studentLastName">Nom :</label>
+               <div style="position: relative;">
+                  <input type="text" id="studentLastName" name="studentLastName" placeholder="Dupont">
+                  <i class="fas fa-user input-icon"></i> <!-- Icône pour Nom -->
+               </div>
+            </div>
+
+            <div class="form-row">
+               <label for="studentFirstName">Prénom :</label>
+               <div style="position: relative;">
+                  <input type="text" id="studentFirstName" name="studentFirstName" placeholder="Jean">
+                  <i class="fas fa-user input-icon"></i> <!-- Icône pour Prénom -->
+               </div>
+            </div>
+
+            <div>
+               <div class="form-row">
+                  <label for="studentClass">Classe :</label>
+                  <div style="position: relative;">
+                     <input type="text" id="studentClass" name="studentClass" placeholder="CIN1C"
+                        list="classSuggestions">
+                     <i class="fas fa-school input-icon"></i> <!-- Icône pour Classe -->
+                  </div>
+                  <datalist id="classSuggestions">
+                     <!-- Suggestions classées dynamiquement via JavaScript -->
+                  </datalist>
+               </div>
+
+               <div class="form-row">
+                  <label for="evaluator">Évaluateur :</label>
+                  <div style="position: relative;">
+                     <input type="text" id="evaluator" name="evaluator" placeholder="Nom évaluateur"
+                        list="evaluatorSuggestions">
+                     <i class="fas fa-chalkboard-teacher input-icon"></i> <!-- Icône pour Évaluateur -->
+                  </div>
+                  <datalist id="evaluatorSuggestions">
+                     <!-- Suggestions évaluateurs dynamiquement -->
+                  </datalist>
+               </div>
+            </div>
+
+            <div>
+               <div class="form-row">
+                  <label for="year">Année :</label>
+                  <div style="position: relative;">
+                     <input type="number" id="year" name="year" placeholder="2024" min="2000" max="2100">
+                     <i class="fas fa-calendar-alt input-icon"></i> <!-- Icône pour Année -->
+                  </div>
+               </div>
+
+               <div class="form-row">
+                  <label for="projetName">Projet :</label>
+                  <div style="position: relative">
+                     <input type="text" id="projetName" name="projetName" placeholder="Projet Alpha">
+                     <i class="fas fa-clipboard-list input-icon"></i> <!-- Icône pour Projet -->
+                  </div>
+               </div>
+            </div>
+
+
+            <div class="form-actions">
+               <button type="submit" class="btn-primary">Rechercher</button>
+            </div>
+         </fieldset>
+      </form>
+
+      <form method="post" id="listEvaluation" class="listEvaluation hidden">
+
+      </form>
+   </main>
+
+
+   <footer>
+      © 2024 - Évaluation des Compétences
+   </footer>
+
+   <script>
+      const api = 'http://localhost:4000';
+
+      document.addEventListener('DOMContentLoaded', () => {
+         const loginForm = document.getElementById('loginForm');
+         const modal = document.getElementById('modal-container');
+         const main = document.querySelector('main');
+         const userInfo = document.getElementById('userInfo');
+         const userRole = document.getElementById('userRole');
+         const userLogin = document.getElementById('userLogin');
+
+         // Fonction pour vérifier l'authentification de l'utilisateur
+         async function checkAuth() {
+            try {
+               const response = await fetch(`${api}/check-auth`, { credentials: 'include' });
+               if (response.ok) {
+                  const user = await response.json();
+                  showMain(user);
+               } else {
+                  throw new Error('Utilisateur non authentifié');
+               }
+            } catch (error) {
+               // Si l'utilisateur n'est pas authentifié, afficher la modal de connexion
+               console.log(error.message);
+               modal.classList.add('show');
+            }
+         }
+
+         // Fonction pour gérer la soumission du formulaire de connexion
+         loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const login = e.target.login.value.trim().toUpperCase();
+            const password = e.target.password.value;
+
+            try {
+               const res = await fetch(`${api}/login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ login, password }),
+                  credentials: 'include',
+               });
+
+               if (res.ok) {
+                  const user = await res.json();
+                  showMain(user);
+               } else {
+                  alert('Identifiants incorrects');
+               }
+            } catch (error) {
+               alert('Erreur serveur');
+            }
+         });
+
+         // Fonction pour afficher la page principale après connexion
+         function showMain(user) {
+            modal.classList.remove('show');
+            main.classList.remove('hidden');
+            userInfo.classList.remove('hidden');
+
+            const r = `${user.role === 'teacher' ? 'Enseignant' : 'Étudiant'} `;
+
+            // Afficher le rôle de l'utilisateur et son login (teacher or student)
+            userRole.textContent = `Rôle: ${r}`;
+            userLogin.textContent = `Login: ${user.userName} `;
+
+            document.cookie = "userRole=" + user.role + ";userName=" + user.userName + ";";
+
+            // Afficher ou masquer les formulaires en fonction du rôle
+            if (user.role === 'teacher') {
+               // L'enseignant a accès à tous les filtres
+               filterForm.classList.remove('hidden');
+               listEvaluation.classList.remove('hidden');
+            } else {
+               // L'étudiant n'a accès qu'à son propre formulaire d'évaluation
+               filterForm.classList.add('hidden');
+               listEvaluation.classList.remove('hidden');  // Affichage du formulaire d'évaluation de l'étudiant
+            }
+         }
+
+         // Vérifier l'authentification dès que la page est chargée
+         checkAuth();
+      });
+
+      const CST_CLASSES = [
+         { name: 'MSIG' },
+         { name: 'CID2A' }, { name: 'CID2B' }, { name: 'CID3A' }, { name: 'CID3B' },
+         { name: 'CIN1A' }, { name: 'CIN1B' }, { name: 'CIN1C' },
+         { name: 'MIN1A' }, { name: 'MIN1B' }, { name: 'MIN2A' }, { name: 'MIN2B' },
+         { name: 'CIN2A' }, { name: 'CIN2B' }, { name: 'MID2A' }, { name: 'MID2B' },
+         { name: 'CIN3' }, { name: 'MID3' }, { name: 'FID1' }, { name: 'FID2' },
+         { name: 'FIN1' }, { name: 'FIN2' }, { name: 'MIN3' }
+      ]
+
+      const CST_EVALUATOR = [
+         { name: 'HCS' },
+         { name: 'AGX' },
+         { name: 'AGT' }
+      ];
+
+      // Fonction pour remplir dynamiquement les datalists
+      function populateDatalist(data, datalistId) {
+         const datalist = document.getElementById(datalistId);
+         datalist.innerHTML = ''; // Réinitialiser les options
+
+         data.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.name;
+            datalist.appendChild(option);
+         });
+      }
+
+      // Appel de la fonction pour remplir les datalists lors du chargement
+      document.addEventListener('DOMContentLoaded', () => {
+         populateDatalist(CST_CLASSES, 'classSuggestions');
+         populateDatalist(CST_EVALUATOR, 'evaluatorSuggestions');
+      });
+
+      /* Search evaluations */
+      async function searchEvaluation(event) {
+         // Empêcher la soumission du formulaire pour ne pas recharger la page
+         event.preventDefault();
+
+         // Récupérer le formulaire qui a déclenché l'événement
+         const form = event.target;
+
+         // Accéder directement aux champs du formulaire via form.elements
+         const studentLastName = form.studentLastName.value.trim();
+         const studentFirstName = form.studentFirstName.value.trim();
+         const studentClass = form.studentClass.value.trim().toLowerCase();
+         const evaluator = form.evaluator.value.trim();
+         const year = form.year.value.trim();
+         const projetName = form.projetName.value.trim().toLowerCase();
+
+         // Afficher toutes les valeurs dans un seul log
+         // console.log(`Nom: ${ studentLastName }, Prénom: ${ studentFirstName }, Classe: ${ studentClass }, Évaluateur: ${ evaluator }, Année: ${ year }, Projet: ${ projetName } `);
+
+         // Construire l'objet de requête
+         const requestData = {
+            evaluator,
+            projetName,
+            studentLastName,
+            studentFirstName,
+            studentClass,
+            year,  // Année spécifique pour filtrer les évaluations
+         };
+
+         try {
+            // Envoi de la requête POST au serveur pour récupérer les évaluations filtrées
+            const res = await fetch(`${api}/search-evaluations`, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify(requestData),
+               credentials: 'include'  // Envoi des cookies si nécessaire
+            });
+
+            if (res.ok) {
+               const evaluations = await res.json();
+               displayEvaluations(evaluations);  // Afficher les évaluations
+            } else {
+               alert('Aucune évaluation trouvée');
+            }
+         } catch (error) {
+            console.error('Erreur lors de la récupération des évaluations:', error);
+            alert('Erreur serveur');
+         }
+      }
+
+      // Fonction pour afficher les évaluations
+      function displayEvaluations(evaluations) {
+
+         const listEvaluation = document.getElementById('listEvaluation');
+         // Réinitialiser la liste des évaluations
+         listEvaluation.innerHTML = '';
+
+         // Si aucune évaluation n'est trouvée
+         if (evaluations.length === 0) {
+            listEvaluation.innerHTML = '<p>Aucune évaluation trouvée pour ces critères.</p>';
+            return;
+         }
+
+         // Affichage des évaluations sous forme de cartes
+         evaluations.forEach(evaluation => {
+            // Création de la carte
+            const evaluationCard = document.createElement('div');
+            evaluationCard.classList.add('evaluation-card');
+
+            // Titre : Nom du projet
+            const projectTitle = document.createElement('h2');
+            projectTitle.classList.add('project-title');
+            projectTitle.textContent = evaluation.project_name;
+            evaluationCard.appendChild(projectTitle);
+
+            // Sous-titre : Nom complet de l'étudiant évalué
+            const studentName = document.createElement('p');
+            studentName.classList.add('student-name');
+            studentName.textContent = `${evaluation.first_name} ${evaluation.last_name}`;
+            evaluationCard.appendChild(studentName);
+
+            // Date : formatée
+            const date = document.createElement('p');
+            date.classList.add('evaluation-date');
+            const formattedDate = new Date(evaluation.date).toLocaleDateString('fr-FR', {
+               year: 'numeric',
+               month: 'long',
+               day: 'numeric'
+            });
+            date.textContent = `${formattedDate}`;
+            evaluationCard.appendChild(date);
+
+            // Evaluateur : affiché en bas à droite
+            const evaluator = document.createElement('span');
+            evaluator.classList.add('evaluator');
+            evaluator.textContent = `${evaluation.evaluator}`;
+            evaluationCard.appendChild(evaluator);
+
+            // Ajouter un clic pour rediriger vers la page d'évaluation avec les bons IDs
+            evaluationCard.addEventListener("click", () => {
+               // Stocker les données dans sessionStorage
+               sessionStorage.setItem("projectId", evaluation.project_id);
+               sessionStorage.setItem("appreciationId", evaluation.appreciation_id);
+               sessionStorage.setItem("studentId", evaluation.student_id);
+
+               // Rediriger
+               window.location.href = "evalV1.html";
+            });
+
+            // Ajout de la carte au conteneur principal
+            listEvaluation.appendChild(evaluationCard);
+         });
+
+      }
+
+      // Fonction pour formater un nom composé
+      function formatName(name) {
+         // Diviser le nom en parties, mais ne pas toucher aux tirets
+         const parts = name.split(' ');  // Diviser par espace uniquement
+
+         // Formater chaque partie du nom (première lettre en majuscule, reste en minuscule)
+         const formattedParts = parts.map(part => {
+            // Si la partie contient un tiret, la gérer comme un nom composé
+            if (part.includes('-')) {
+               // Diviser la partie par le tiret, et formater chaque segment
+               const hyphenParts = part.split('-').map(subPart =>
+                  subPart.charAt(0).toUpperCase() + subPart.slice(1).toLowerCase()
+               );
+               // Recomposer avec un tiret
+               return hyphenParts.join('-');
+            } else {
+               // Si pas de tiret, on applique juste la majuscule
+               return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            }
+         });
+
+         // Recomposer le nom formaté avec un espace entre les parties
+         return formattedParts.join(' ');
+      }
+   </script>
+</body>
+
+</html>
